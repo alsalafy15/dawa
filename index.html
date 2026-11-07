@@ -1727,5 +1727,94 @@ load = function() {
 };
 load();
 </script>
+<!-- ===== تحسينات الجوال (Mobile Friendly) ===== -->
+<style>
+    /* إخفاء الزر في الشاشات الكبيرة */
+    .mobile-menu-btn { display: none; }
+
+    @media (max-width: 768px) {
+        /* تحويل الشريط الجانبي إلى قائمة منزلقة */
+        .sidebar {
+            position: fixed !important;
+            top: 0;
+            right: -100%; /* مخفي افتراضياً */
+            width: 260px;
+            height: 100vh;
+            z-index: 9999;
+            transition: right 0.3s ease;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+            margin: 0 !important;
+        }
+        .sidebar.open { right: 0; }
+        
+        /* إضافة زر القائمة (الهامبرغر) */
+        .mobile-menu-btn {
+            display: flex !important;
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            z-index: 10000;
+            width: 45px;
+            height: 45px;
+            background: #5e130e;
+            color: white;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border: 2px solid #c9a24b;
+        }
+        
+        /* تعديل المحتوى الرئيسي ليأخذ كامل العرض */
+        main {
+            margin-right: 0 !important;
+            padding: 10px !important;
+            padding-top: 70px !important; /* مساحة لزر القائمة */
+            width: 100% !important;
+            max-height: none !important; /* إزالة التمرير الداخلي */
+        }
+        
+        /* جعل الجداول قابلة للتمرير أفقياً */
+        .overflow-x-auto {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* تصغير الخطوط قليلاً للجوال */
+        .text-2xl { font-size: 1.25rem !important; }
+        .text-xl { font-size: 1.1rem !important; }
+        .card { padding: 12px !important; }
+        
+        /* إخفاء الشعار الكبير في شاشة الدخول ليكون أنسب للجوال */
+        #loginView .logo-badge { width: 80px !important; height: 80px !important; }
+        
+        /* منع السحب العشوائي */
+        body { overflow-x: hidden; }
+    }
+</style>
+
+<script>
+    // إضافة زر القائمة تلقائياً عند فتح الصفحة
+    document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.createElement('button');
+        btn.className = 'mobile-menu-btn';
+        btn.innerHTML = '<i class="fas fa-bars"></i>';
+        btn.onclick = () => {
+            document.querySelector('.sidebar').classList.toggle('open');
+        };
+        document.body.appendChild(btn);
+
+        // إغلاق القائمة عند النقر خارجها
+        document.addEventListener('click', function(e) {
+            const sidebar = document.querySelector('.sidebar');
+            if (window.innerWidth <= 768 && sidebar && sidebar.classList.contains('open')) {
+                if (!sidebar.contains(e.target) && !btn.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+    });
+</script>
 </body>
 </html>
