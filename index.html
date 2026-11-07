@@ -730,11 +730,97 @@ function renderDashboard() {
         ${yc.length ? `<div class="overflow-x-auto"><table class="resizable-table" data-table-id="dashPlan"><thead><tr><th data-col-key="idx">#</th><th data-col-key="program">البرنامج</th><th data-col-key="name">الدورة</th><th data-col-key="duration">المدة</th><th data-col-key="startDate">البدء</th><th data-col-key="endDate">الانتهاء</th><th data-col-key="teacher">المدرس</th><th data-col-key="academic">مشرف أكاديمي</th><th data-col-key="admin">مشرف إداري</th><th data-col-key="control">مشرف رقابي</th><th data-col-key="beneficiary">الجهة</th><th data-col-key="target">الفئة</th><th data-col-key="type">النوع</th><th data-col-key="time">التوقيت</th><th data-col-key="status">الإنجاز</th></tr></thead><tbody>${yc.map((c,i) => { const active = isDateInRange(c); return `<tr class="${active ? 'row-active' : ''}"><td>${i+1}</td><td>${esc(c.program)}</td><td><a class="font-bold hover:underline cursor-pointer" style="color:#7a1a13" onclick="openCourse('${c.id}')">${esc(c.name)}</a>${active ? ' <span class="badge badge-green">جارية</span>' : ''}</td><td>${esc(c.duration)}</td><td>${esc(c.startDate)}</td><td>${esc(c.endDate)}</td><td>${esc(teacherNameOf(c)) || '-'}</td><td>${esc(c.academicSupervisor) || '-'}</td><td>${esc(c.adminSupervisor) || '-'}</td><td>${esc(c.controlSupervisor) || '-'}</td><td>${esc(c.beneficiary) || '-'}</td><td>${esc(c.targetGroup)}</td><td>${esc(c.courseType)}</td><td>${esc(c.time)}</td><td><span class="badge ${c.completion==='مكتملة'?'badge-green':c.completion==='قيد التنفيذ'?'badge-yellow':'badge-blue'}">${esc(c.completion)}</span></td></tr>`; }).join('')}</tbody></table></div>` : '<p class="text-center text-gray-400 py-6">لا توجد</p>'}
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div class="card p-5"><h2 class="font-bold mb-3" style="color:#5e130e">الدورات حسب السنة</h2><table><thead><tr><th>السنة</th><th>الدورات</th><th>المشاركون</th></tr></thead><tbody>${availableYears().map(y => { const cs = DB.courses.filter(c => c.year === y); return `<tr style="cursor:pointer" onclick="state.planYear=${y}; goTo('plan')"><td>${y}</td><td>${cs.length}</td><td>${cs.reduce((s,c)=>s+c.participants.length,0)}</td></tr>`; }).join('')}</tbody></table></div>
-        <div class="card p-5"><h2 class="font-bold mb-3" style="color:#5e130e">الفئات</h2><table><thead><tr><th>الفئة</th><th>العدد</th></tr></thead><tbody>${CATEGORIES.map(cat => `<tr style="cursor:pointer" onclick="state.catPage='${cat}'; goTo('database')"><td>${esc(cat)}</td><td>${(DB.categories[cat]||[]).length}</td></tr>`).join('')}</tbody></table></div>
-      </div>`;
-    initTableResizers();
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+        <!-- جدول الدورات حسب السنة (معدل) -->
+        <div class="card p-4">
+          <h2 class="font-bold mb-3" style="color:#5e130e">الدورات حسب السنة</h2>
+          <div class="overflow-x-auto">
+            <table class="resizable-table">
+              <thead>
+                <tr>
+                  <th>السنة</th>
+                  <th>الدورات</th>
+                  <th>المشاركون</th>
+                  <th>الناجحون</th>
+                  <th>الأوائل</th>
+                  <th>الراسبون</th>
+                  <th>الحضور</th>
+                  <th>الغياب</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${availableYears().map(y => {
+                  const cs = DB.courses.filter(c => c.year === y);
+                  const totalParticipants = cs.reduce((s,c) => s + c.participants.length, 0);
+                  
+                  let totalPassed = 0, totalFailed = 0, totalTop = 0, totalPresent = 0, totalAbsent = 0;
+                  
+                  cs.forEach(c => {
+                    // حساب النجاح والرسوب والأوائل
+                    c.participants.forEach(p => {
+                      const score = getExamScore(c.id, p.personalId);
+                      if (score !== null) {
+                        if (score >= 30) totalPassed++;
+                        else totalFailed++;
+                      }
+                    });
+                    
+                    // الأوائل (أعلى 3 درجات في الدورة)
+                    const sorted = c.participants.map(p => getExamScore(c.id, p.personalId) || 0).sort((a,b) => b-a);
+                    const topScores = [...new Set(sorted)].slice(0, 3); // أعلى 3 درجات مختلفة
+                    c.participants.forEach(p => {
+                      const score = getExamScore(c.id, p.personalId) || 0;
+                      if (topScores.includes(score) && score > 0) totalTop++;
+                    });
+
+                    // حساب الحضور والغياب
+                    Object.values(c.attendance).forEach(day => {
+                      Object.values(day).forEach(status => {
+                        if (status === 'present') totalPresent++;
+                        else if (status === 'absent') totalAbsent++;
+                      });
+                    });
+                  });
+
+                  return `<tr style="cursor:pointer" onclick="state.planYear=${y}; goTo('plan')">
+                    <td class="font-bold">${y}</td>
+                    <td>${cs.length}</td>
+                    <td>${totalParticipants}</td>
+                    <td><span class="badge badge-green">${totalPassed}</span></td>
+                    <td><span class="badge badge-gold">${totalTop}</span></td>
+                    <td><span class="badge badge-red">${totalFailed}</span></td>
+                    <td><span class="badge badge-blue">${totalPresent}</span></td>
+                    <td><span class="badge badge-yellow">${totalAbsent}</span></td>
+                  </tr>`;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- جدول الفئات -->
+        <div class="card p-4">
+          <h2 class="font-bold mb-3" style="color:#5e130e">الفئات</h2>
+          <div class="overflow-x-auto">
+            <table class="resizable-table">
+              <thead>
+                <tr>
+                  <th>الفئة</th>
+                  <th>العدد</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${CATEGORIES.map(cat => `<tr style="cursor:pointer" onclick="state.catPage='${cat}'; goTo('database')">
+                  <td>${esc(cat)}</td>
+                  <td>${(DB.categories[cat]||[]).length}</td>
+                </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  }
   } else if (r === 'teacher') {
     const my = DB.courses.filter(c => c.teacherId === state.user.id || c.teacherName === state.user.name);
     const unread = DB.messages.filter(m => m.teacherId === state.user.id && !m.read).length;
