@@ -1726,82 +1726,105 @@ load = function() {
   loadCoursesFromCloud();
 };
 load();
-</script>
-<!-- ===== تحسينات الجوال (Mobile Friendly) ===== -->
+<!-- ===== إصلاحات الجوال القوية ===== -->
 <style>
-    /* إخفاء الزر في الشاشات الكبيرة */
-    .mobile-menu-btn { display: none; }
-
     @media (max-width: 768px) {
-        /* تحويل الشريط الجانبي إلى قائمة منزلقة */
+        /* 1. إخفاء الفراغات الجانبية وإجبار المحتوى على أخذ كامل العرض */
+        html, body {
+            overflow-x: hidden !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* 2. تحويل الشريط الجانبي إلى قائمة منزلقة مخفية */
         .sidebar {
             position: fixed !important;
-            top: 0;
-            right: -100%; /* مخفي افتراضياً */
-            width: 260px;
-            height: 100vh;
-            z-index: 9999;
-            transition: right 0.3s ease;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+            top: 0 !important;
+            right: -100% !important; /* مخفي خارج الشاشة */
+            width: 260px !important;
+            height: 100vh !important;
+            z-index: 9999 !important;
+            transition: right 0.3s ease !important;
             margin: 0 !important;
         }
-        .sidebar.open { right: 0; }
-        
-        /* إضافة زر القائمة (الهامبرغر) */
-        .mobile-menu-btn {
-            display: flex !important;
-            position: fixed;
-            top: 12px;
-            right: 12px;
-            z-index: 10000;
-            width: 45px;
-            height: 45px;
-            background: #5e130e;
-            color: white;
-            border-radius: 50%;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            border: 2px solid #c9a24b;
+        .sidebar.open {
+            right: 0 !important; /* يظهر عند الضغط على الزر */
         }
-        
-        /* تعديل المحتوى الرئيسي ليأخذ كامل العرض */
-        main {
+
+        /* 3. إجبار المحتوى الرئيسي على أخذ كامل الشاشة */
+        main, #mainContent {
             margin-right: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
             padding: 10px !important;
             padding-top: 70px !important; /* مساحة لزر القائمة */
+            box-sizing: border-box !important;
+        }
+
+        /* 4. إزالة أي هوامش من الحاويات (Cards) */
+        .card, .container, .grid {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
             width: 100% !important;
-            max-height: none !important; /* إزالة التمرير الداخلي */
+            max-width: 100% !important;
         }
-        
-        /* جعل الجداول قابلة للتمرير أفقياً */
+
+        /* 5. إصلاح الجداول لتكون قابلة للتمرير فقط */
         .overflow-x-auto {
+            width: 100% !important;
             overflow-x: auto !important;
-            -webkit-overflow-scrolling: touch;
+            -webkit-overflow-scrolling: touch !important;
         }
-        
-        /* تصغير الخطوط قليلاً للجوال */
-        .text-2xl { font-size: 1.25rem !important; }
-        .text-xl { font-size: 1.1rem !important; }
-        .card { padding: 12px !important; }
-        
-        /* إخفاء الشعار الكبير في شاشة الدخول ليكون أنسب للجوال */
-        #loginView .logo-badge { width: 80px !important; height: 80px !important; }
-        
-        /* منع السحب العشوائي */
-        body { overflow-x: hidden; }
+
+        /* 6. زر القائمة (الهامبرغر) */
+        .mobile-menu-btn {
+            display: flex !important;
+            position: fixed !important;
+            top: 15px !important;
+            right: 15px !important;
+            z-index: 10000 !important;
+            width: 45px !important;
+            height: 45px !important;
+            background: #5e130e !important;
+            color: white !important;
+            border-radius: 50% !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 20px !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+            border: 2px solid #c9a24b !important;
+            cursor: pointer !important;
+        }
+
+        /* تصغير الشعار في شاشة الدخول */
+        #loginView .logo-badge {
+            width: 80px !important;
+            height: 80px !important;
+        }
+        #loginView .card {
+            padding: 20px !important;
+            margin: 15px !important;
+        }
+    }
+
+    /* إخفاء الزر في الشاشات الكبيرة (الكمبيوتر) */
+    @media (min-width: 769px) {
+        .mobile-menu-btn {
+            display: none !important;
+        }
     }
 </style>
 
 <script>
-    // إضافة زر القائمة تلقائياً عند فتح الصفحة
+    // إضافة زر القائمة عند فتح الصفحة
     document.addEventListener('DOMContentLoaded', () => {
         const btn = document.createElement('button');
         btn.className = 'mobile-menu-btn';
         btn.innerHTML = '<i class="fas fa-bars"></i>';
         btn.onclick = () => {
-            document.querySelector('.sidebar').classList.toggle('open');
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) sidebar.classList.toggle('open');
         };
         document.body.appendChild(btn);
 
