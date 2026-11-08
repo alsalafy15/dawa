@@ -246,6 +246,15 @@ img,svg,canvas,video{max-width:100%}
   .resizable-table td,.resizable-table th{padding:7px 6px}
   .designer-panel{max-height:none}
 }
+/* ===== مؤشرات لوحة التحكم: أصغر حجماً بنفس الخصائص ===== */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px;margin-bottom:20px}
+.kpi-grid:empty{display:none}
+.stat-card{padding:9px 11px!important;gap:9px!important;border-radius:12px}
+.stat-card .icon-box{width:34px!important;height:34px!important;border-radius:9px!important}
+.stat-card .icon-box i{font-size:14px!important}
+.stat-card p.text-2xl{font-size:17px!important;line-height:1.2!important}
+.stat-card p.text-xs{font-size:11px!important;margin-bottom:0!important}
+@media(max-width:767px){.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
 </style>
 <style id="tailwind-build">
 *,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.collapse{visibility:collapse}.absolute{position:absolute}.relative{position:relative}.col-span-2{grid-column:span 2/span 2}.mx-auto{margin-left:auto;margin-right:auto}.my-3{margin-top:.75rem;margin-bottom:.75rem}.mb-0\.5{margin-bottom:.125rem}.mb-1{margin-bottom:.25rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.mb-5{margin-bottom:1.25rem}.mb-6{margin-bottom:1.5rem}.ml-1{margin-left:.25rem}.ml-2{margin-left:.5rem}.ml-auto{margin-left:auto}.mt-1{margin-top:.25rem}.mt-2{margin-top:.5rem}.mt-3{margin-top:.75rem}.mt-4{margin-top:1rem}.mt-5{margin-top:1.25rem}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.table{display:table}.grid{display:grid}.hidden{display:none}.h-12{height:3rem}.h-9{height:2.25rem}.min-h-screen{min-height:100vh}.w-12{width:3rem}.w-20{width:5rem}.w-64{width:16rem}.w-full{width:100%}.max-w-2xl{max-width:42rem}.max-w-lg{max-width:32rem}.max-w-md{max-width:28rem}.flex-1{flex:1 1 0%}.flex-shrink-0{flex-shrink:0}.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-pointer{cursor:pointer}.resize{resize:both}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.flex-wrap{flex-wrap:wrap}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:.25rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.5rem*var(--tw-space-y-reverse))}.space-y-3>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.75rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.75rem*var(--tw-space-y-reverse))}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.whitespace-nowrap{white-space:nowrap}.whitespace-pre-wrap{white-space:pre-wrap}.rounded{border-radius:.25rem}.rounded-lg{border-radius:.5rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-emerald-600{--tw-border-opacity:1;border-color:rgb(5 150 105/var(--tw-border-opacity,1))}.border-emerald-700{--tw-border-opacity:1;border-color:rgb(4 120 87/var(--tw-border-opacity,1))}.bg-emerald-100{--tw-bg-opacity:1;background-color:rgb(209 250 229/var(--tw-bg-opacity,1))}.bg-emerald-200{--tw-bg-opacity:1;background-color:rgb(167 243 208/var(--tw-bg-opacity,1))}.bg-emerald-50{--tw-bg-opacity:1;background-color:rgb(236 253 245/var(--tw-bg-opacity,1))}.bg-emerald-600{--tw-bg-opacity:1;background-color:rgb(5 150 105/var(--tw-bg-opacity,1))}.bg-emerald-700{--tw-bg-opacity:1;background-color:rgb(4 120 87/var(--tw-bg-opacity,1))}.bg-emerald-800{--tw-bg-opacity:1;background-color:rgb(6 95 70/var(--tw-bg-opacity,1))}.bg-emerald-900{--tw-bg-opacity:1;background-color:rgb(6 78 59/var(--tw-bg-opacity,1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251/var(--tw-bg-opacity,1))}.bg-gradient-to-br{background-image:linear-gradient(to bottom right,var(--tw-gradient-stops))}.from-amber-500{--tw-gradient-from:#f59e0b var(--tw-gradient-from-position);--tw-gradient-to:rgba(245,158,11,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-blue-500{--tw-gradient-from:#3b82f6 var(--tw-gradient-from-position);--tw-gradient-to:rgba(59,130,246,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-emerald-500{--tw-gradient-from:#10b981 var(--tw-gradient-from-position);--tw-gradient-to:rgba(16,185,129,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-green-500{--tw-gradient-from:#22c55e var(--tw-gradient-from-position);--tw-gradient-to:rgba(34,197,94,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-purple-500{--tw-gradient-from:#a855f7 var(--tw-gradient-from-position);--tw-gradient-to:rgba(168,85,247,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-red-500{--tw-gradient-from:#ef4444 var(--tw-gradient-from-position);--tw-gradient-to:rgba(239,68,68,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-red-800{--tw-gradient-from:#991b1b var(--tw-gradient-from-position);--tw-gradient-to:rgba(153,27,27,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-yellow-400{--tw-gradient-from:#facc15 var(--tw-gradient-from-position);--tw-gradient-to:rgba(250,204,21,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-yellow-500{--tw-gradient-from:#eab308 var(--tw-gradient-from-position);--tw-gradient-to:rgba(234,179,8,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.to-amber-600{--tw-gradient-to:#d97706 var(--tw-gradient-to-position)}.to-amber-700{--tw-gradient-to:#b45309 var(--tw-gradient-to-position)}.to-blue-700{--tw-gradient-to:#1d4ed8 var(--tw-gradient-to-position)}.to-emerald-700{--tw-gradient-to:#047857 var(--tw-gradient-to-position)}.to-green-700{--tw-gradient-to:#15803d var(--tw-gradient-to-position)}.to-purple-700{--tw-gradient-to:#7e22ce var(--tw-gradient-to-position)}.to-red-700{--tw-gradient-to:#b91c1c var(--tw-gradient-to-position)}.to-red-900{--tw-gradient-to:#7f1d1d var(--tw-gradient-to-position)}.to-yellow-600{--tw-gradient-to:#ca8a04 var(--tw-gradient-to-position)}.p-1{padding:.25rem}.p-2{padding:.5rem}.p-3{padding:.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.py-8{padding-top:2rem;padding-bottom:2rem}.pb-3{padding-bottom:.75rem}.pt-3{padding-top:.75rem}.pt-4{padding-top:1rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-\[10px\]{font-size:10px}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:.75rem;line-height:1rem}.font-bold{font-weight:700}.font-semibold{font-weight:600}.italic{font-style:italic}.leading-6{line-height:1.5rem}.text-emerald-100{--tw-text-opacity:1;color:rgb(209 250 229/var(--tw-text-opacity,1))}.text-emerald-200{--tw-text-opacity:1;color:rgb(167 243 208/var(--tw-text-opacity,1))}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183/var(--tw-text-opacity,1))}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105/var(--tw-text-opacity,1))}.text-emerald-700{--tw-text-opacity:1;color:rgb(4 120 87/var(--tw-text-opacity,1))}.text-emerald-800{--tw-text-opacity:1;color:rgb(6 95 70/var(--tw-text-opacity,1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175/var(--tw-text-opacity,1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128/var(--tw-text-opacity,1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99/var(--tw-text-opacity,1))}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.underline{text-decoration-line:underline}.line-through{text-decoration-line:line-through}.shadow{--tw-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color),0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.\!filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)!important}.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.hover\:underline:hover{text-decoration-line:underline}@media (min-width:768px){.md\:col-span-2{grid-column:span 2/span 2}.md\:col-span-3{grid-column:span 3/span 3}.md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.md\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.md\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.md\:grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}}@media (min-width:1024px){.lg\:col-span-1{grid-column:span 1/span 1}.lg\:col-span-2{grid-column:span 2/span 2}.lg\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.lg\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.lg\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}}
@@ -316,7 +325,11 @@ const PLAN_EXCEL_COLUMNS = [
   { key: 'targetGroup', labels: ['الفئة','الفئة المستهدفة'] },
   { key: 'courseType', labels: ['النوع','نوع الدورة'] },
   { key: 'time', labels: ['التوقيت','الوقت'] },
-  { key: 'completion', labels: ['الإنجاز','الحالة'] }
+  { key: 'completion', labels: ['الإنجاز','الحالة'] },
+  { key: 'teacherName', labels: ['المدرس','اسم المدرس'] },
+  { key: 'academicSupervisor', labels: ['مشرف أكاديمي','المشرف الأكاديمي'] },
+  { key: 'adminSupervisor', labels: ['مشرف إداري','المشرف الإداري'] },
+  { key: 'controlSupervisor', labels: ['مشرف رقابي','المشرف الرقابي'] }
 ];
 const ARABIC_FONTS = ['Cairo','Tajawal','Amiri','Reem Kufi','Almarai','El Messiri','Harmattan','Changa','Marhey','Aref Ruqaa','Kufam','Lalezar','Lateef','Lemonada','Markazi Text','Mada','Mirza','Noto Kufi Arabic','Noto Naskh Arabic','Noto Sans Arabic','Noto Serif Arabic','Rakkas','Scheherazade New','Suez One','Vibes','Alkalami','Alyamama','Baloo Bhaijaan 2','IBM Plex Sans Arabic','Tinos'];
 
@@ -544,22 +557,28 @@ function clearSupervisorField(courseId, field) { const c = getCourse(courseId); 
 
 // ============ Excel Import ============
 function normalizeHeader(h) { return String(h||'').trim().replace(/\s+/g,' ').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').toLowerCase(); }
-function detectColumnMapping(headers, mapping) { const result = {}; const norm = headers.map(h => normalizeHeader(h)); mapping.forEach(col => { const idx = norm.findIndex(h => col.labels.some(l => h === normalizeHeader(l) || h.includes(normalizeHeader(l)))); if (idx >= 0) result[col.key] = idx; }); return result; }
+function detectColumnMapping(headers, mapping) {
+  const result = {}, used = new Set(), norm = headers.map(h => normalizeHeader(h));
+  // 1) تطابق تام أولاً، 2) ثم تطابق جزئي للأعمدة المتبقية فقط (مع عدم استخدام عمود لحقلين)
+  mapping.forEach(col => { const idx = norm.findIndex((h, i) => !used.has(i) && col.labels.some(l => h === normalizeHeader(l))); if (idx >= 0) { result[col.key] = idx; used.add(idx); } });
+  mapping.forEach(col => { if (result[col.key] !== undefined) return; const idx = norm.findIndex((h, i) => !used.has(i) && h && col.labels.some(l => h.includes(normalizeHeader(l)))); if (idx >= 0) { result[col.key] = idx; used.add(idx); } });
+  return result;
+}
 function openPlanImport() { const i = document.createElement('input'); i.type = 'file'; i.accept = '.xlsx,.xls,.csv'; i.onchange = (e) => handlePlanExcelImport(e.target.files[0]); i.click(); }
 function handlePlanExcelImport(f) {
   if (!f) return;
   const reader = new FileReader();
   reader.onload = (ev) => {
     try {
-      const wb = XLSX.read(new Uint8Array(ev.target.result), { type: 'array', cellDates: true });
-      const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false, dateNF: 'yyyy-mm-dd' });
+      const wb = /\.csv$/i.test(f.name) ? XLSX.read(ev.target.result, { type: 'string', raw: true }) : XLSX.read(new Uint8Array(ev.target.result), { type: 'array' });
+      const json = sheetToTextRows(wb.Sheets[wb.SheetNames[0]]);
       if (json.length < 2) return toast('فارغ', 'error');
       const headers = json[0]; const mapping = detectColumnMapping(headers, PLAN_EXCEL_COLUMNS);
       if (Object.keys(mapping).length === 0) return toast('لم يتم التعرف', 'error');
       showImportPreview(json, mapping);
     } catch(err) { toast('فشل', 'error'); }
   };
-  reader.readAsArrayBuffer(f);
+  if (/\.csv$/i.test(f.name)) reader.readAsText(f, 'utf-8'); else reader.readAsArrayBuffer(f);
 }
 function showImportPreview(json, mapping) {
   const detectedCols = Object.keys(mapping);
@@ -572,12 +591,16 @@ function confirmPlanImport() {
   if (!window._pendingImport) return closeModal();
   const { rows, mapping } = window._pendingImport;
   let count = 0, skipped = 0;
+  const imported = [];
   rows.forEach(r => {
-    const g = k => mapping.hasOwnProperty(k) ? String(r[mapping[k]] || '').trim() : '';
+    const g = k => mapping.hasOwnProperty(k) ? String(r[mapping[k]] == null ? '' : r[mapping[k]]).trim() : '';
+    const d = (k, dflt) => mapping.hasOwnProperty(k) ? g(k) : dflt;   // القيمة الافتراضية فقط إن لم يكن العمود في الملف
     const name = g('name'); if (!name) { skipped++; return; }
-    DB.courses.push({ id: uid(), year: state.planYear, program: g('program'), name, duration: g('duration'), capacity: parseInt(g('capacity')) || 0, startDate: normalizeDateValue(r, mapping, 'startDate'), endDate: normalizeDateValue(r, mapping, 'endDate'), teacherId: '', teacherName: '', academicSupervisor: '', adminSupervisor: '', controlSupervisor: '', beneficiary: g('beneficiary'), targetGroup: g('targetGroup'), courseType: g('courseType') || 'حضوري', time: g('time'), completion: g('completion') || 'لم تبدأ', teamsLink: '', participants: [], attendance: {} });
+    const c = { id: uid(), year: state.planYear, program: g('program'), name, duration: g('duration'), capacity: parseInt(g('capacity')) || 0, startDate: normalizeDateValue(r, mapping, 'startDate'), endDate: normalizeDateValue(r, mapping, 'endDate'), teacherId: '', teacherName: g('teacherName'), academicSupervisor: g('academicSupervisor'), adminSupervisor: g('adminSupervisor'), controlSupervisor: g('controlSupervisor'), beneficiary: g('beneficiary'), targetGroup: g('targetGroup'), courseType: d('courseType', 'حضوري'), time: g('time'), completion: d('completion', 'لم تبدأ'), teamsLink: '', participants: [], attendance: {} };
+    syncTeacher(c); DB.courses.push(c); imported.push(c);
     count++;
   });
+  imported.forEach(c => cloudSaveCourse(c));
   save(); closeModal(); renderView(); toast(`تم استيراد ${count}${skipped ? ` — تجاهل ${skipped}` : ''}`);
   window._pendingImport = null;
 }
@@ -620,7 +643,61 @@ function confirmImportPicker() {
   closeModal();
 }
 function showExcelImportForm() { document.getElementById('importBody').innerHTML = `<div class="border-t pt-4 mt-4"><div class="mb-3"><label class="text-sm font-semibold">الملف</label><input type="file" accept=".xlsx,.xls,.csv" class="input" onchange="parseExcelForImport(event)"></div><div class="flex justify-end"><button class="btn btn-gray" onclick="closeModal()">إلغاء</button></div></div>`; }
-function parseExcelForImport(e) { const f = e.target.files[0]; if (!f) return; if (typeof XLSX === 'undefined') return toast('مكتبة Excel غير محمّلة، تحقق من الاتصال بالإنترنت وأعد تحميل الصفحة', 'error'); const reader = new FileReader(); reader.onload = (ev) => { try { const wb = XLSX.read(new Uint8Array(ev.target.result), { type: 'array' }); const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false }); if (rows.length < 2) return toast('فارغ', 'error'); const items = rows.slice(1).filter(r => r && r.some(c => c)).map(r => ({ name: String(r[0]||'').trim(), nationality: String(r[1]||'').trim(), personalId: String(r[2]||'').trim(), employeeNumber: String(r[3]||'').trim(), phone: String(r[4]||'').trim(), jobTitle: String(r[5]||'').trim(), department: String(r[6]||'').trim() })); if (window._importCtx?.onImport) window._importCtx.onImport(items); closeModal(); } catch(err) { toast('فشل', 'error'); } }; reader.readAsArrayBuffer(f); }
+// ---- قراءة الملف كما هو: نصوص الخلايا حرفياً (دون تحويل أرقام الهوية/الجوال) وبنفس ترتيب الصفوف ----
+const IMPORT_HDRS = {
+  name: ['الاسم','الاسم الكامل','اسم المشارك','اسم الموظف','اسم','الموظف','المشارك','name','full name','fullname'],
+  nationality: ['الجنسية','الجنسيه','nationality'],
+  personalId: ['الرقم الشخصي','رقم الهوية','الهوية','الرقم','رقم البطاقة','البطاقة الشخصية','الهوية الوطنية','الرقم الوطني','السجل المدني','id','personal id','national id','qid'],
+  employeeNumber: ['رقم الوظيفة','الرقم الوظيفي','رقم الموظف','الوظيفة','employee number','employee no','emp no','job number'],
+  phone: ['الجوال','رقم الجوال','الهاتف','رقم الهاتف','الموبايل','موبايل','phone','mobile'],
+  jobTitle: ['المسمى الوظيفي','المسمى','jobtitle','job title','position'],
+  department: ['الإدارة','الادارة','القسم','department']
+};
+function normHdr(s) { return String(s || '').toLowerCase().replace(/[\u064B-\u065F\u0640]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/[\s_\-\.\/\\:()]+/g, ''); }
+function xlCellText(cell) {
+  if (!cell || cell.v === undefined || cell.v === null) return '';
+  if (cell.t === 's' || typeof cell.v === 'string') return String(cell.v).trim();
+  if (cell.t === 'n') {
+    try { if (cell.z && XLSX.SSF && XLSX.SSF.is_date(cell.z) && cell.w) return String(cell.w).trim(); } catch (e) {}
+    if (cell.w && /^[0-9]+$/.test(cell.w)) return cell.w;                 // يحفظ الأصفار البادئة إن كانت في تنسيق الخلية
+    if (Number.isInteger(cell.v)) { try { return BigInt(cell.v).toString(); } catch (e) { return String(cell.v); } }
+    return String(cell.v);
+  }
+  if (cell.t === 'b') return cell.v ? 'TRUE' : 'FALSE';
+  return String(cell.w !== undefined ? cell.w : cell.v).trim();
+}
+function sheetToTextRows(ws) {
+  if (!ws || !ws['!ref']) return [];
+  const rg = XLSX.utils.decode_range(ws['!ref']), rows = [];
+  for (let r = rg.s.r; r <= rg.e.r; r++) { const row = []; for (let c = rg.s.c; c <= rg.e.c; c++) row.push(xlCellText(ws[XLSX.utils.encode_cell({ r, c })])); rows.push(row); }
+  return rows;
+}
+function mapImportRows(rows) {
+  rows = rows.filter(r => r.some(v => v !== ''));
+  if (!rows.length) return [];
+  const keys = Object.keys(IMPORT_HDRS), lookup = {};
+  keys.forEach(k => IMPORT_HDRS[k].forEach(h => { lookup[normHdr(h)] = k; }));
+  const first = rows[0].map(normHdr), hits = first.filter(h => lookup[h]).length;
+  let colMap = {}, start = 0;
+  if (hits >= 1 && !first.some(h => /^\d{6,}$/.test(h))) { first.forEach((h, i) => { const k = lookup[h]; if (k && colMap[k] === undefined) colMap[k] = i; }); start = 1; }
+  else colMap = { name: 0, nationality: 1, personalId: 2, employeeNumber: 3, phone: 4, jobTitle: 5, department: 6 };
+  return rows.slice(start).map(r => { const o = {}; keys.forEach(k => { o[k] = colMap[k] !== undefined ? String(r[colMap[k]] == null ? '' : r[colMap[k]]).trim() : ''; }); return o; });
+}
+function parseExcelForImport(e) {
+  const f = e.target.files[0]; if (!f) return;
+  if (typeof XLSX === 'undefined') return toast('مكتبة Excel غير محمّلة، تحقق من الاتصال بالإنترنت وأعد تحميل الصفحة', 'error');
+  const isCsv = /\.csv$/i.test(f.name), reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const wb = isCsv ? XLSX.read(ev.target.result, { type: 'string', raw: true }) : XLSX.read(new Uint8Array(ev.target.result), { type: 'array' });
+      const items = mapImportRows(sheetToTextRows(wb.Sheets[wb.SheetNames[0]]));
+      if (!items.length) return toast('الملف فارغ', 'error');
+      if (window._importCtx?.onImport) window._importCtx.onImport(items);
+      closeModal();
+    } catch (err) { console.error(err); toast('تعذّرت قراءة الملف', 'error'); }
+  };
+  if (isCsv) reader.readAsText(f, 'utf-8'); else reader.readAsArrayBuffer(f);
+}
 
 // ============ Survey Templates ============
 function defaultSurveyTemplates() {
@@ -735,28 +812,22 @@ function renderDashboard() {
       
       <h3 class="font-bold mb-3" style="color:#5e130e"><i class="fas fa-star ml-1"></i> المؤشرات الرئيسية <span class="text-xs text-gray-500">(اضغط على أي رقم لعرض التفاصيل)</span></h3>
       
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+      <div class="kpi-grid">
         ${statCard('fa-book','إجمالي الدورات', allCourses.length, 'plan', 'emerald')}
         ${statCard('fa-play-circle','الدورات الجارية', activeCourses, 'dashboard|active', 'green')}
         ${statCard('fa-users','إجمالي المشاركين', totalParticipants, 'nomination', 'blue')}
         ${statCard('fa-check-circle','الدورات المكتملة', allCourses.filter(c => c.completion === 'مكتملة').length, 'dashboard|completed', 'purple')}
-      </div>
       
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
         ${statCard('fa-chalkboard-teacher','المدرسون', teachersCount, 'teachers', 'amber')}
         ${statCard('fa-id-badge','الموظفون', employeesCount, 'employees', 'maroon')}
         ${statCard('fa-database','أعضاء قاعدة البيانات', dbCount, 'database', 'blue')}
         ${statCard('fa-user-cog','المستخدمون', usersCount, 'users', 'purple')}
-      </div>
       
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
         ${statCard('fa-file-signature','الاختبارات', totalExams, 'exams', 'emerald')}
         ${statCard('fa-pen-fancy','الاختبارات المقدمة', totalExamResults, 'dashboard|examresults', 'blue')}
         ${statCard('fa-trophy','الناجحون', totalPassed, 'dashboard|passed', 'green')}
         ${statCard('fa-times-circle','الراسبون', totalFailed, 'dashboard|failed', 'red')}
-      </div>
       
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
         ${statCard('fa-poll','ردود الاستبيانات', surveyResponsesCount, 'surveys', 'amber')}
         ${statCard('fa-certificate','الشهادات المستحقة', totalCerts, 'certPortal', 'gold')}
         ${statCard('fa-user-slash','أيام الغياب', absentTotal, 'absences', 'red')}
@@ -771,6 +842,7 @@ function renderDashboard() {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div class="card p-5 dash-span2"><h2 class="font-bold mb-3" style="color:#5e130e"><i class="fas fa-table ml-1"></i> إحصائيات الدورات حسب السنة</h2><div class="overflow-x-auto"><table data-no-enh="1"><thead><tr><th>السنة</th><th style="text-align:center">الدورات</th><th style="text-align:center">المشاركون</th><th style="text-align:center">الناجحون</th><th style="text-align:center">الأوائل</th><th style="text-align:center">الراسبون</th><th style="text-align:center">الحضور</th><th style="text-align:center">الغياب</th></tr></thead><tbody>${yearStatsRows()}</tbody></table></div><p class="text-xs text-gray-500 mt-2">الحضور والغياب = عدد سجلات التحضير (مشارك/يوم) — الأوائل = أصحاب المركز الأول في كل دورة (الدرجة 30 فأكثر).</p></div>
         <div class="card p-5"><h2 class="font-bold mb-3" style="color:#5e130e">الفئات</h2><table data-no-enh="1"><thead><tr><th>الفئة</th><th>العدد</th></tr></thead><tbody>${CATEGORIES.map(cat => `<tr style="cursor:pointer" onclick="state.catPage='${cat}'; goTo('database')"><td>${esc(cat)}</td><td>${(DB.categories[cat]||[]).length}</td></tr>`).join('')}</tbody></table></div>
+        <div class="card p-5"><h2 class="font-bold mb-3" style="color:#5e130e"><i class="fas fa-chart-column ml-1"></i> بدايات الدورات حسب الشهر</h2><canvas id="chMonths" height="180"></canvas></div>
       </div>`;
     initTableResizers();
   } else if (r === 'teacher') {
@@ -857,7 +929,7 @@ function bulkDeleteCategoryItems() { const cbs = getSelected('cat-cb'); if (!cbs
 function openCategoryImport(cat) {
   openUnifiedImport({ title: `استيراد إلى ${cat}`, onImport: (items) => {
     let count = 0, skipped = 0;
-    items.forEach(p => { if (DB.categories[cat].length >= CAT_MAX) { skipped++; return; } if (!DB.categories[cat].some(x => x.personalId === p.personalId)) { DB.categories[cat].push({ id: uid(), name: p.name, nationality: p.nationality || 'قطري', personalId: p.personalId, employeeNumber: p.employeeNumber || '', phone: p.phone || '' }); count++; } else skipped++; });
+    items.forEach(p => { if (DB.categories[cat].length >= CAT_MAX) { skipped++; return; } if (!p.personalId || !DB.categories[cat].some(x => x.personalId === p.personalId)) { DB.categories[cat].push({ id: uid(), name: p.name, nationality: p.nationality || '', personalId: p.personalId, employeeNumber: p.employeeNumber || '', phone: p.phone || '' }); count++; } else skipped++; });
     save(); renderDatabase(); toast(`تم ${count}${skipped ? ` — تجاهل ${skipped}` : ''}`);
   }});
 }
@@ -869,7 +941,7 @@ function renderEmployees() {
   document.getElementById('mainContent').innerHTML = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2"><h1 class="text-2xl font-bold" style="color:#5e130e"><i class="fas fa-id-badge ml-1"></i> الموظفون (${DB.hrEmployees.length})</h1><div class="flex gap-2 flex-wrap"><button class="btn btn-primary" onclick="openHrEmployeeForm()"><i class="fas fa-plus"></i> إضافة</button><button class="btn btn-warn" onclick="openEmployeeImport()"><i class="fas fa-file-excel"></i> استيراد</button><button class="btn btn-danger" onclick="bulkDeleteHr()"><i class="fas fa-trash"></i> حذف المحدد</button></div></div><div class="card p-3 mb-3"><input class="input" placeholder="بحث..." value="${esc(state.empSearch||'')}" id="empSearchBox" oninput="state.empSearch=this.value; keepFocus('empSearchBox',renderEmployees)"></div><div class="flex justify-end mb-2">${colsToggleBtn('emp')}</div><div class="card overflow-x-auto"><table class="resizable-table" data-table-id="emp"><thead><tr><th data-col-key="select" style="width:40px"><input type="checkbox" data-select-all="true"></th><th data-col-key="idx">#</th><th data-col-key="name">الاسم</th><th data-col-key="nationality">الجنسية</th><th data-col-key="pid">الرقم الشخصي</th><th data-col-key="empno">رقم الوظيفة</th><th data-col-key="jobTitle">المسمى</th><th data-col-key="department">الشعبة</th><th data-col-key="username">المستخدم</th><th data-col-key="password">كلمة المرور</th><th data-col-key="actions">إجراءات</th></tr></thead><tbody>${filtered.slice(0, 500).map((h,i) => { const u = DB.users.find(x => x.personalId === h.personalId); return `<tr><td><input type="checkbox" class="hr-cb" data-id="${h.id}"></td><td>${i+1}</td><td class="font-semibold">${esc(h.name)}</td><td>${esc(h.nationality)||'-'}</td><td>${esc(h.personalId)}</td><td>${esc(h.employeeNumber)||'-'}</td><td>${esc(h.jobTitle)||'-'}</td><td>${esc(h.department)||'-'}</td><td>${u?esc(u.username):'-'}</td><td>${u?pwCell(u.password):'-'}</td><td class="whitespace-nowrap"><button class="action-btn action-edit" onclick="openHrEmployeeForm('${h.id}')"><i class="fas fa-edit"></i></button>${u ? `<button class="action-btn action-key" onclick="openAdminResetPassword('${u.id}')"><i class="fas fa-key"></i></button>` : `<button class="action-btn action-view" onclick="createHrLogin('${h.id}')"><i class="fas fa-user-plus"></i></button>`}<button class="action-btn action-delete" onclick="deleteHr('${h.id}')"><i class="fas fa-trash"></i></button></td></tr>`; }).join('') || '<tr><td colspan="11" class="text-center text-gray-400 py-6">لا يوجد</td></tr>'}</tbody></table></div>`;
   initTableResizers();
 }
-function openEmployeeImport() { openUnifiedImport({ title: 'استيراد موظفين', onImport: (items) => { let added = 0, skipped = 0; items.forEach(p => { if (!p.name || !p.personalId) { skipped++; return; } if (DB.hrEmployees.some(h => h.personalId === p.personalId)) { skipped++; return; } DB.hrEmployees.push({ id: uid(), name: p.name, nationality: p.nationality || 'قطري', personalId: p.personalId, employeeNumber: p.employeeNumber || '', phone: p.phone || '', jobTitle: p.jobTitle || '', department: p.department || '' }); if (!DB.users.some(u => u.personalId === p.personalId)) { DB.users.push({ id: uid(), name: p.name, role: 'employee', personalId: p.personalId, username: p.personalId, password: p.personalId, phone: p.phone || '', credentialsCustomized: false }); cloudCreateLogin(p.personalId, p.personalId, p.name, 'employee'); } added++; }); save(); renderEmployees(); toast(`تم ${added}${skipped ? ' — تجاهل ' + skipped : ''}`); } }); }
+function openEmployeeImport() { openUnifiedImport({ title: 'استيراد موظفين', onImport: (items) => { let added = 0, skipped = 0; items.forEach(p => { if (!p.name || !p.personalId) { skipped++; return; } if (DB.hrEmployees.some(h => h.personalId === p.personalId)) { skipped++; return; } DB.hrEmployees.push({ id: uid(), name: p.name, nationality: p.nationality || '', personalId: p.personalId, employeeNumber: p.employeeNumber || '', phone: p.phone || '', jobTitle: p.jobTitle || '', department: p.department || '' }); if (!DB.users.some(u => u.personalId === p.personalId)) { DB.users.push({ id: uid(), name: p.name, role: 'employee', personalId: p.personalId, username: p.personalId, password: p.personalId, phone: p.phone || '', credentialsCustomized: false }); cloudCreateLogin(p.personalId, p.personalId, p.name, 'employee'); } added++; }); save(); renderEmployees(); toast(`تم ${added}${skipped ? ' — تجاهل ' + skipped : ''}`); } }); }
 function openHrEmployeeForm(id) {
   const h = id ? DB.hrEmployees.find(x => x.id === id) : { name: '', nationality: 'قطري', personalId: '', employeeNumber: '', phone: '', jobTitle: '', department: '' };
   const u = id ? DB.users.find(x => x.personalId === h.personalId) : null;
@@ -969,7 +1041,7 @@ function executeCopyPlan(srcYear) {
   save(); closeModal(); state.planYear = targetYear; renderPlan(); toast(`✓ تم نسخ ${copied} دورة من ${srcYear} إلى ${targetYear}`);
 }
 
-function bulkDeleteCourses() { const cbs = getSelected('course-cb'); if (!cbs.length) return toast('لم تختر', 'error'); if (!confirm(`حذف ${cbs.length}؟`)) return; const ids = cbs.map(cb => cb.dataset.cid); DB.courses = DB.courses.filter(c => !ids.includes(c.id)); DB.exams = DB.exams.filter(e => !ids.includes(e.courseId)); save(); renderPlan(); toast(`تم حذف ${ids.length}`); }
+function bulkDeleteCourses() { const cbs = getSelected('course-cb'); if (!cbs.length) return toast('لم تختر', 'error'); if (!confirm(`حذف ${cbs.length}؟`)) return; const ids = cbs.map(cb => cb.dataset.cid); DB.courses = DB.courses.filter(c => !ids.includes(c.id)); DB.exams = DB.exams.filter(e => !ids.includes(e.courseId)); save(); renderPlan(); toast(`تم حذف ${ids.length}`); cloudDeleteCourses(ids); }
 function openCourseForm(id) {
   const c = id ? getCourse(id) : { year: state.planYear, program: '', name: '', duration: '', capacity: 30, startDate: '', endDate: '', teacherName: '', academicSupervisor: '', adminSupervisor: '', controlSupervisor: '', beneficiary: '', targetGroup: '', courseType: 'حضوري', time: '', completion: 'لم تبدأ' };
   document.getElementById('modalRoot').innerHTML = `<div class="modal" onclick="if(event.target===this)closeModal()"><div class="modal-content p-6"><h2 class="text-xl font-bold mb-4" style="color:#5e130e">${id?'تعديل':'إضافة'} دورة</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label class="text-sm font-semibold">البرنامج</label><input class="input" id="f_program" value="${esc(c.program)}"></div><div><label class="text-sm font-semibold">الدورة</label><input class="input" id="f_name" value="${esc(c.name)}"></div><div><label class="text-sm font-semibold">المدة</label><input class="input" id="f_duration" value="${esc(c.duration)}"></div><div><label class="text-sm font-semibold">العدد</label><input type="number" class="input" id="f_capacity" value="${c.capacity}"></div><div><label class="text-sm font-semibold">البدء</label><input type="date" class="input" id="f_startDate" value="${esc(c.startDate)}"></div><div><label class="text-sm font-semibold">الانتهاء</label><input type="date" class="input" id="f_endDate" value="${esc(c.endDate)}"></div><div><label class="text-sm font-semibold">المدرس</label><input class="input" id="f_teacherName" value="${esc(c.teacherName||'')}"></div><div><label class="text-sm font-semibold">مشرف أكاديمي</label><input class="input" id="f_academicSupervisor" value="${esc(c.academicSupervisor)}"></div><div><label class="text-sm font-semibold">مشرف إداري</label><input class="input" id="f_adminSupervisor" value="${esc(c.adminSupervisor)}"></div><div><label class="text-sm font-semibold">مشرف رقابي</label><input class="input" id="f_controlSupervisor" value="${esc(c.controlSupervisor)}"></div><div><label class="text-sm font-semibold">الجهة</label><input class="input" id="f_beneficiary" value="${esc(c.beneficiary)}"></div><div><label class="text-sm font-semibold">الفئة</label><input class="input" id="f_targetGroup" value="${esc(c.targetGroup)}"></div><div><label class="text-sm font-semibold">النوع</label><select class="input" id="f_courseType">${['حضوري','عن بعد','مدمج'].map(t=>`<option ${c.courseType===t?'selected':''}>${t}</option>`).join('')}</select></div><div><label class="text-sm font-semibold">التوقيت</label><input class="input" id="f_time" value="${esc(c.time)}"></div><div class="md:col-span-2"><label class="text-sm font-semibold">الإنجاز</label><select class="input" id="f_completion">${['لم تبدأ','قيد التنفيذ','مكتملة'].map(t=>`<option ${c.completion===t?'selected':''}>${t}</option>`).join('')}</select></div></div><div class="flex justify-end gap-2 mt-5"><button class="btn btn-gray" onclick="closeModal()">إلغاء</button><button class="btn btn-primary" onclick="saveCourseForm('${id||''}')"><i class="fas fa-save"></i> حفظ</button></div></div></div>`;
@@ -1009,7 +1081,7 @@ function createExam(courseId) { DB.exams.push({ id: uid(), courseId, title: 'ا�
 function deleteExam(id) { if (!confirm('حذف؟')) return; DB.exams = DB.exams.filter(e => e.id !== id); save(); if (state.courseId) renderCourseDetail(); else renderView(); }
 function openExamEditor(examId) {
   const ex = DB.exams.find(e => e.id === examId); const c = getCourse(ex.courseId);
-  document.getElementById('modalRoot').innerHTML = `<div class="modal" onclick="if(event.target===this)closeModal()"><div class="modal-content p-5" style="max-width:1100px"><h2 class="text-xl font-bold mb-3" style="color:#5e130e">${esc(c.name)}</h2><div class="exam-q"><h3 class="font-bold mb-2" style="color:#7a1a13">السؤال الأول (20)</h3>${ex.questions.tf.map((q,i) => `<div style="display:grid;grid-template-columns:30px 1fr 70px 70px;gap:6px;margin-bottom:6px"><span class="font-bold">${i+1}.</span><input class="input" id="tf_text_${i}" value="${esc(q.text)}"><label class="text-xs"><input type="radio" name="tf_${i}" value="true" ${q.answer===true?'checked':''}> صح</label><label class="text-xs"><input type="radio" name="tf_${i}" value="false" ${q.answer===false?'checked':''}> خطأ</label></div>`).join('')}</div><div class="exam-q"><h3 class="font-bold mb-2" style="color:#7a1a13">السؤال الثاني (20)</h3>${ex.questions.mcq.map((q,i) => `<div class="exam-q" style="background:#fff"><div class="font-bold mb-1">${i+1}. <input class="input inline-block" style="width:auto;min-width:300px" id="mcq_text_${i}" value="${esc(q.text)}"></div><div class="grid grid-cols-2 gap-2">${[0,1,2,3].map(j => `<label class="text-xs flex items-center gap-1"><input type="radio" name="mcq_${i}" value="${j}" ${q.correct===j?'checked':''}><input class="input" id="mcq_choice_${i}_${j}" value="${esc(q.choices[j]||'')}"></label>`).join('')}</div></div>`).join('')}</div><div class="exam-q"><h3 class="font-bold mb-2" style="color:#7a1a13">السؤال الثالث (10)</h3>${ex.questions.multi.map((q,i) => `<div class="exam-q" style="background:#fff"><div class="font-bold mb-1">${i+1}. <input class="input inline-block" style="width:auto;min-width:300px" id="multi_text_${i}" value="${esc(q.text)}"></div><div class="grid grid-cols-2 gap-2">${[0,1,2,3].map(j => `<label class="text-xs flex items-center gap-1"><input type="checkbox" id="multi_${i}_${j}" ${(q.correct||[]).includes(j)?'checked':''}><input class="input" id="multi_choice_${i}_${j}" value="${esc(q.choices[j]||'')}"></label>`).join('')}</div></div>`).join('')}</div><div class="flex justify-end gap-2 mt-3"><button class="btn btn-gray" onclick="closeModal()">إلغاء</button><button class="btn btn-primary" onclick="saveExam('${examId}')">حفظ</button></div></div></div>`;
+  document.getElementById('modalRoot').innerHTML = `<div class="modal" onclick="if(event.target===this)closeModal()"><div class="modal-content p-5" style="max-width:1100px"><h2 class="text-xl font-bold mb-3" style="color:#5e130e">${esc(c.name)}</h2><div class="exam-q"><h3 class="font-bold mb-2" style="color:#7a1a13">السؤال الأول (20): ضع علامة صح أو خطأ أمام العبارات الآتية</h3>${ex.questions.tf.map((q,i) => `<div style="display:grid;grid-template-columns:30px 1fr 70px 70px;gap:6px;margin-bottom:6px"><span class="font-bold">${i+1}.</span><input class="input" id="tf_text_${i}" value="${esc(q.text)}"><label class="text-xs"><input type="radio" name="tf_${i}" value="true" ${q.answer===true?'checked':''}> صح</label><label class="text-xs"><input type="radio" name="tf_${i}" value="false" ${q.answer===false?'checked':''}> خطأ</label></div>`).join('')}</div><div class="exam-q"><h3 class="font-bold mb-2" style="color:#7a1a13">السؤال الثاني (20): اختر الإجابة الصحيحة من بين الخيارات الآتية</h3>${ex.questions.mcq.map((q,i) => `<div class="exam-q" style="background:#fff"><div class="font-bold mb-1">${i+1}. <input class="input inline-block" style="width:auto;min-width:300px" id="mcq_text_${i}" value="${esc(q.text)}"></div><div class="grid grid-cols-2 gap-2">${[0,1,2,3].map(j => `<label class="text-xs flex items-center gap-1"><input type="radio" name="mcq_${i}" value="${j}" ${q.correct===j?'checked':''}><input class="input" id="mcq_choice_${i}_${j}" value="${esc(q.choices[j]||'')}"></label>`).join('')}</div></div>`).join('')}</div><div class="exam-q"><h3 class="font-bold mb-2" style="color:#7a1a13">السؤال الثالث (10): اختر جميع الإجابات الصحيحة</h3><p class="text-xs text-gray-500 mb-2">إذا لم تضع علامة صح على جميع الإجابات يحصل المجيب على صفر</p>${ex.questions.multi.map((q,i) => `<div class="exam-q" style="background:#fff"><div class="font-bold mb-1">${i+1}. <input class="input inline-block" style="width:auto;min-width:300px" id="multi_text_${i}" value="${esc(q.text)}"></div><div class="grid grid-cols-2 gap-2">${[0,1,2,3].map(j => `<label class="text-xs flex items-center gap-1"><input type="checkbox" id="multi_${i}_${j}" ${(q.correct||[]).includes(j)?'checked':''}><input class="input" id="multi_choice_${i}_${j}" value="${esc(q.choices[j]||'')}"></label>`).join('')}</div></div>`).join('')}</div><div class="flex justify-end gap-2 mt-3"><button class="btn btn-gray" onclick="closeModal()">إلغاء</button><button class="btn btn-primary" onclick="saveExam('${examId}')">حفظ</button></div></div></div>`;
 }
 function saveExam(examId) { const ex = DB.exams.find(e => e.id === examId); ex.questions.tf = Array.from({length:10}, (_,i) => ({ text: document.getElementById(`tf_text_${i}`).value.trim(), answer: (document.querySelector(`input[name="tf_${i}"]:checked`)?.value === 'true') })); ex.questions.mcq = Array.from({length:10}, (_,i) => ({ text: document.getElementById(`mcq_text_${i}`).value.trim(), choices: [0,1,2,3].map(j => document.getElementById(`mcq_choice_${i}_${j}`).value.trim()), correct: parseInt(document.querySelector(`input[name="mcq_${i}"]:checked`)?.value || 0) })); ex.questions.multi = Array.from({length:5}, (_,i) => ({ text: document.getElementById(`multi_text_${i}`).value.trim(), choices: [0,1,2,3].map(j => document.getElementById(`multi_choice_${i}_${j}`).value.trim()), correct: [0,1,2,3].filter(j => document.getElementById(`multi_${i}_${j}`).checked) })); save(); closeModal(); renderCourseDetail(); toast('تم'); }
 
@@ -1440,15 +1512,15 @@ function startStudentExam(examId, courseId) {
   const ex = DB.exams.find(e => e.id === examId); const c = getCourse(courseId); const pid = state.user.personalId;
   if (!canTakeExam(c, pid)) return toast('حضورك أقل من 75%', 'error');
   let currentQ = 0; const answers = { tf: {}, mcq: {}, multi: {} };
-  const renderQ = () => { const q = ex.questions.tf[currentQ]; document.getElementById('modalRoot').innerHTML = `<div class="modal"><div class="modal-content p-6 max-w-2xl"><div class="flex justify-between mb-3"><h2 class="text-xl font-bold" style="color:#5e130e">${esc(c.name)} — ${currentQ+1}/10</h2><button class="btn btn-gray btn-sm" onclick="closeModal()">إلغاء</button></div><p class="text-lg font-semibold mb-4">${esc(q.text)}</p><div class="space-y-2"><label class="p-3 border rounded cursor-pointer block"><input type="radio" name="q_ans" ${answers.tf[currentQ]===true?'checked':''} onchange="window._examSetTf(true)"> صح</label><label class="p-3 border rounded cursor-pointer block"><input type="radio" name="q_ans" ${answers.tf[currentQ]===false?'checked':''} onchange="window._examSetTf(false)"> خطأ</label></div><div class="flex justify-between mt-4"><button class="btn btn-gray" onclick="window._examPrev()" ${currentQ===0?'disabled':''}>السابق</button><button class="btn btn-primary" onclick="window._examNext()">${currentQ<9?'التالي':'متابعة'}</button></div></div></div>`; };
+  const renderQ = () => { const q = ex.questions.tf[currentQ]; document.getElementById('modalRoot').innerHTML = `<div class="modal"><div class="modal-content p-6 max-w-2xl"><div class="flex justify-between mb-3"><h2 class="text-xl font-bold" style="color:#5e130e">${esc(c.name)} — ${currentQ+1}/10</h2><button class="btn btn-gray btn-sm" onclick="closeModal()">إلغاء</button></div><p class="font-bold mb-1" style="color:#7a1a13">السؤال الأول: ضع علامة صح أو خطأ أمام العبارات الآتية</p><p class="text-lg font-semibold mb-4">${esc(q.text)}</p><div class="space-y-2"><label class="p-3 border rounded cursor-pointer block"><input type="radio" name="q_ans" ${answers.tf[currentQ]===true?'checked':''} onchange="window._examSetTf(true)"> صح</label><label class="p-3 border rounded cursor-pointer block"><input type="radio" name="q_ans" ${answers.tf[currentQ]===false?'checked':''} onchange="window._examSetTf(false)"> خطأ</label></div><div class="flex justify-between mt-4"><button class="btn btn-gray" onclick="window._examPrev()" ${currentQ===0?'disabled':''}>السابق</button><button class="btn btn-primary" onclick="window._examNext()">${currentQ<9?'التالي':'متابعة'}</button></div></div></div>`; };
   window._examSetTf = (v) => { answers.tf[currentQ] = v; };
   window._examNext = () => { if (answers.tf[currentQ] === undefined) return toast('اختر', 'error'); if (currentQ < 9) { currentQ++; renderQ(); } else { currentQ = 0; renderMcq(); } };
   window._examPrev = () => { if (currentQ > 0) { currentQ--; renderQ(); } };
-  const renderMcq = () => { const q = ex.questions.mcq[currentQ]; document.getElementById('modalRoot').innerHTML = `<div class="modal"><div class="modal-content p-6 max-w-2xl"><div class="flex justify-between mb-3"><h2 class="text-xl font-bold" style="color:#5e130e">${esc(c.name)} — ${currentQ+1}/10</h2><button class="btn btn-gray btn-sm" onclick="closeModal()">إلغاء</button></div><p class="text-lg font-semibold mb-4">${esc(q.text)}</p><div class="space-y-2">${q.choices.map((ch,j) => `<label class="p-3 border rounded cursor-pointer block"><input type="radio" name="mcq_ans" ${answers.mcq[currentQ]===j?'checked':''} onchange="window._examSetMcq(${j})"> ${esc(ch || `خيار ${j+1}`)}</label>`).join('')}</div><div class="flex justify-between mt-4"><button class="btn btn-gray" onclick="window._mcqPrev()">السابق</button><button class="btn btn-primary" onclick="window._mcqNext()">${currentQ<9?'التالي':'متابعة'}</button></div></div></div>`; };
+  const renderMcq = () => { const q = ex.questions.mcq[currentQ]; document.getElementById('modalRoot').innerHTML = `<div class="modal"><div class="modal-content p-6 max-w-2xl"><div class="flex justify-between mb-3"><h2 class="text-xl font-bold" style="color:#5e130e">${esc(c.name)} — ${currentQ+1}/10</h2><button class="btn btn-gray btn-sm" onclick="closeModal()">إلغاء</button></div><p class="font-bold mb-1" style="color:#7a1a13">السؤال الثاني: اختر الإجابة الصحيحة من بين الخيارات الآتية</p><p class="text-lg font-semibold mb-4">${esc(q.text)}</p><div class="space-y-2">${q.choices.map((ch,j) => `<label class="p-3 border rounded cursor-pointer block"><input type="radio" name="mcq_ans" ${answers.mcq[currentQ]===j?'checked':''} onchange="window._examSetMcq(${j})"> ${esc(ch || `خيار ${j+1}`)}</label>`).join('')}</div><div class="flex justify-between mt-4"><button class="btn btn-gray" onclick="window._mcqPrev()">السابق</button><button class="btn btn-primary" onclick="window._mcqNext()">${currentQ<9?'التالي':'متابعة'}</button></div></div></div>`; };
   window._examSetMcq = (v) => { answers.mcq[currentQ] = v; };
   window._mcqNext = () => { if (answers.mcq[currentQ] === undefined) return toast('اختر', 'error'); if (currentQ < 9) { currentQ++; renderMcq(); } else { currentQ = 0; renderMulti(); } };
   window._mcqPrev = () => { if (currentQ > 0) { currentQ--; renderMcq(); } };
-  const renderMulti = () => { const q = ex.questions.multi[currentQ]; document.getElementById('modalRoot').innerHTML = `<div class="modal"><div class="modal-content p-6 max-w-2xl"><div class="flex justify-between mb-3"><h2 class="text-xl font-bold" style="color:#5e130e">${esc(c.name)} — ${currentQ+1}/5</h2><button class="btn btn-gray btn-sm" onclick="closeModal()">إلغاء</button></div><p class="text-lg font-semibold mb-4">${esc(q.text)}</p><div class="space-y-2">${q.choices.map((ch,j) => `<label class="p-3 border rounded cursor-pointer block"><input type="checkbox" ${(answers.multi[currentQ]||[]).includes(j)?'checked':''} onchange="window._examToggleMulti(${j},this.checked)"> ${esc(ch || `خيار ${j+1}`)}</label>`).join('')}</div><div class="flex justify-between mt-4"><button class="btn btn-gray" onclick="window._multiPrev()">السابق</button><button class="btn btn-green" onclick="window._submitFinalExam()">تسليم</button></div></div></div>`; };
+  const renderMulti = () => { const q = ex.questions.multi[currentQ]; document.getElementById('modalRoot').innerHTML = `<div class="modal"><div class="modal-content p-6 max-w-2xl"><div class="flex justify-between mb-3"><h2 class="text-xl font-bold" style="color:#5e130e">${esc(c.name)} — ${currentQ+1}/5</h2><button class="btn btn-gray btn-sm" onclick="closeModal()">إلغاء</button></div><p class="font-bold mb-1" style="color:#7a1a13">السؤال الثالث: اختر جميع الإجابات الصحيحة</p><p class="text-xs text-gray-500 mb-3">إذا لم تضع علامة صح على جميع الإجابات يحصل المجيب على صفر</p><p class="text-lg font-semibold mb-4">${esc(q.text)}</p><div class="space-y-2">${q.choices.map((ch,j) => `<label class="p-3 border rounded cursor-pointer block"><input type="checkbox" ${(answers.multi[currentQ]||[]).includes(j)?'checked':''} onchange="window._examToggleMulti(${j},this.checked)"> ${esc(ch || `خيار ${j+1}`)}</label>`).join('')}</div><div class="flex justify-between mt-4"><button class="btn btn-gray" onclick="window._multiPrev()">السابق</button><button class="btn btn-green" onclick="window._submitFinalExam()">تسليم</button></div></div></div>`; };
   window._examToggleMulti = (j, ch) => { if (!answers.multi[currentQ]) answers.multi[currentQ] = []; if (ch) answers.multi[currentQ].push(j); else answers.multi[currentQ] = answers.multi[currentQ].filter(x => x !== j); };
   window._multiPrev = () => { if (currentQ > 0) { currentQ--; renderMulti(); } };
   window._submitFinalExam = () => { let score = 0; ex.questions.tf.forEach((q,i) => { if (answers.tf[i] === q.answer) score += 2; }); ex.questions.mcq.forEach((q,i) => { if (answers.mcq[i] === q.correct) score += 2; }); ex.questions.multi.forEach((q,i) => { const a = (answers.multi[i] || []).sort(); const b = [...q.correct].sort(); if (b.length && a.length === b.length && a.every((v,k) => v === b[k])) score += 2; }); ex.results = ex.results || {}; ex.results[pid] = { score, date: new Date().toISOString() }; save(); closeModal(); toast(`درجتك: ${score}/50`); renderMyCourseStudent(); };
@@ -1467,12 +1539,9 @@ const QUOTES=[['ادْعُ إِلَىٰ سَبِيلِ رَبِّكَ بِالْ
 function heroHTML(){const d=new Date();const q=QUOTES[Math.floor(d/864e5)%QUOTES.length];let h='',g='';try{h=new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}).format(d);g=new Intl.DateTimeFormat('ar',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d);}catch(e){}return `<div class="hero no-print"><div><div class="hero-hi">${d.getHours()<12?'صباح الخير':'مساء الخير'}، ${esc(state.user.name)}</div><div class="hero-date"><i class="fas fa-calendar-day ml-1"></i> ${esc(g)} — ${esc(h)}</div><button class="cols-toggle-btn no-print" style="margin-top:10px" onclick="openKpiSelector()"><i class="fas fa-sliders"></i> تخصيص المؤشرات</button></div><div class="hero-q">${q[0]}<small>— ${q[1]}</small></div></div>`;}
 const _rd=renderDashboard;
 renderDashboard=function(){_rd();const r=state.user.role;if(r!=='admin'&&r!=='employee')return;
- document.getElementById('mainContent').insertAdjacentHTML('beforeend','<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-5"><div class="card p-5"><h2 class="font-bold mb-3" style="color:#5e130e"><i class="fas fa-chart-column ml-1"></i> بدايات الدورات حسب الشهر</h2><canvas id="chMonths" height="180"></canvas></div><div class="card p-5"><h2 class="font-bold mb-3" style="color:#5e130e"><i class="fas fa-chart-pie ml-1"></i> نتائج الاختبارات</h2><canvas id="chResults" height="180"></canvas></div></div>');
- if(typeof Chart==='undefined')return;Chart.defaults.font.family="'Tajawal',sans-serif";
+ const cv=document.getElementById('chMonths');if(typeof Chart==='undefined'||!cv)return;Chart.defaults.font.family="'Tajawal',sans-serif";
  const y=new Date().getFullYear(),m=Array(12).fill(0);DB.courses.forEach(c=>{if(c.year===y&&c.startDate){const k=parseInt(c.startDate.slice(5,7))-1;if(k>=0&&k<12)m[k]++;}});
- let p=0,f=0;DB.exams.forEach(e=>Object.values(e.results||{}).forEach(x=>x.score>=30?p++:f++));
- new Chart(document.getElementById('chMonths'),{type:'bar',data:{labels:['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],datasets:[{data:m,backgroundColor:'#7a1a13',borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
- new Chart(document.getElementById('chResults'),{type:'doughnut',data:{labels:['ناجح','راسب'],datasets:[{data:[p,f],backgroundColor:['#059669','#dc2626'],borderWidth:2,borderColor:'#fff'}]},options:{cutout:'62%'}});
+ new Chart(cv,{type:'bar',data:{labels:['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],datasets:[{data:m,backgroundColor:'#7a1a13',borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
 };
 const _LBL={'action-edit':'تعديل','action-delete':'حذف','action-key':'كلمة المرور','action-view':'عرض','action-print':'طباعة'};
 function fitCerts(){document.querySelectorAll('.cert-fit').forEach(w=>{const c=w.firstElementChild;if(c)c.style.transform='scale('+(w.clientWidth/1122)+')';});}
@@ -1852,9 +1921,10 @@ async function loadCoursesFromCloud() {
     if (c1.error) { console.error('خطأ في جلب الدورات:', c1.error); toast('تعذّر جلب الدورات من السحابة، تم عرض البيانات المحفوظة على الجهاز', 'error'); return; }
     if (p1.error || a1.error) console.error('خطأ في جلب المشاركين/التحضير:', p1.error || a1.error);
     const participantsData = p1.error ? null : p1.data, attendanceData = a1.error ? null : a1.data;
-    const local = (DB.courses || []).filter(c => !isDemoCourse(c));
-    const cloudCourses = c1.data.map(c => {
-      const cParticipants = participantsData ? participantsData.filter(p => p.course_id === c.id).map(p => ({ name: p.name, nationality: p.nationality, personalId: p.personal_id, employeeNumber: p.employee_number, phone: p.phone })) : null;
+    const tbC = new Set((DB.tombstones && DB.tombstones.courses) || []), tbP = new Set((DB.tombstones && DB.tombstones.participants) || []);
+    const local = (DB.courses || []).filter(c => !isDemoCourse(c) && !tbC.has(c.id));
+    const cloudCourses = c1.data.filter(c => !tbC.has(c.id)).map(c => {
+      const cParticipants = participantsData ? participantsData.filter(p => p.course_id === c.id && !tbP.has(p.course_id + '|' + p.personal_id)).map(p => ({ name: p.name, nationality: p.nationality, personalId: p.personal_id, employeeNumber: p.employee_number, phone: p.phone })) : null;
       const cAttendance = attendanceData ? {} : null;
       if (attendanceData) attendanceData.filter(a => a.course_id === c.id).forEach(a => { (cAttendance[a.date] = cAttendance[a.date] || {})[a.participant_id] = a.status; });
       return { id: c.id, year: c.year, program: c.program, name: c.name, duration: c.duration, capacity: c.capacity, startDate: c.start_date, endDate: c.end_date, teacherName: c.teacher_name, academicSupervisor: c.academic_supervisor, adminSupervisor: c.admin_supervisor, controlSupervisor: c.control_supervisor, beneficiary: c.beneficiary, targetGroup: c.target_group, courseType: c.course_type, time: c.time, completion: c.completion, teamsLink: c.teams_link, participants: cParticipants, attendance: cAttendance };
@@ -1868,7 +1938,7 @@ async function loadCoursesFromCloud() {
       // المشاركون: ما في السحابة + ما أُضيف محلياً ولم يصل إليها بعد
       out.participants = (cc.participants || []).map(cp => Object.assign({}, ((lc && lc.participants) || []).find(p => p.personalId === cp.personalId) || {}, cp));
       if (!cc.participants) out.participants = (lc && lc.participants) || [];
-      ((lc && lc.participants) || []).forEach(lp => { if (cc.participants && !out.participants.some(p => p.personalId === lp.personalId)) { out.participants.push(lp); pushP.push([cc.id, lp]); } });
+      ((lc && lc.participants) || []).forEach(lp => { if (cc.participants && !tbP.has(cc.id + '|' + lp.personalId) && !out.participants.some(p => p.personalId === lp.personalId)) { out.participants.push(lp); pushP.push([cc.id, lp]); } });
       out.attendance = cc.attendance ? JSON.parse(JSON.stringify(cc.attendance)) : ((lc && lc.attendance) || {});
       if (cc.attendance && lc) Object.entries(lc.attendance || {}).forEach(([d, m]) => Object.entries(m || {}).forEach(([pid, st]) => { if (st && !(out.attendance[d] && out.attendance[d][pid])) { (out.attendance[d] = out.attendance[d] || {})[pid] = st; pushA.push([cc.id, d, pid, st]); } }));
       return out;
@@ -1881,6 +1951,15 @@ async function loadCoursesFromCloud() {
       Object.entries(lc.attendance || {}).forEach(([d, m]) => Object.entries(m || {}).forEach(([pid, st]) => { if (st) pushA.push([lc.id, d, pid, st]); }));
     });
     DB.courses = merged; save();
+    // إعادة محاولة حذف ما حُذف محلياً ولم يُحذف من السحابة بعد، وتنظيف العلامات المؤكَّدة
+    const goneC = [...tbC].filter(id => c1.data.some(c => c.id === id));
+    if (goneC.length) cloudDeleteCourses(goneC);
+    if (!p1.error) { (p1.data || []).forEach(p => { if (tbP.has(p.course_id + '|' + p.personal_id) && !tbC.has(p.course_id)) cloudDeleteParticipant(p.course_id, p.personal_id); }); }
+    if (DB.tombstones) {
+      DB.tombstones.courses = (DB.tombstones.courses || []).filter(id => c1.data.some(c => c.id === id));
+      if (!p1.error) DB.tombstones.participants = (DB.tombstones.participants || []).filter(k => (p1.data || []).some(p => p.course_id + '|' + p.personal_id === k));
+      save();
+    }
     console.log('تم تحميل البيانات من السحابة. عدد الدورات:', merged.length);
     if (pushC.length || pushP.length || pushA.length) {
       (async () => {
@@ -1899,13 +1978,20 @@ async function cloudSaveCourse(c) {
   try { const { error } = await supabaseClient.from('courses').upsert(row); if (error) { console.error('cloudSaveCourse', error); toast('تنبيه: لم تُحفظ الدورة على السحابة (' + error.message + ')', 'error'); } }
   catch (e) { console.error('cloudSaveCourse', e); }
 }
-async function cloudDeleteCourse(id) {
+function tomb(kind) { DB.tombstones = DB.tombstones || { courses: [], participants: [] }; return DB.tombstones[kind] = DB.tombstones[kind] || []; }
+async function cloudDeleteCourse(id) { return cloudDeleteCourses([id]); }
+async function cloudDeleteCourses(ids) {
+  if (!ids || !ids.length) return true;
+  const tb = tomb('courses'); ids.forEach(id => { if (!tb.includes(id)) tb.push(id); }); save();   // لا تعود الدورة بعد التحديث حتى لو تأخر حذفها من السحابة
   try {
-    await supabaseClient.from('attendance').delete().eq('course_id', id);
-    await supabaseClient.from('participants').delete().eq('course_id', id);
-    const { error } = await supabaseClient.from('courses').delete().eq('id', id);
-    if (error) { console.error('cloudDeleteCourse', error); toast('تنبيه: لم تُحذف الدورة من السحابة (' + error.message + ')', 'error'); }
-  } catch (e) { console.error('cloudDeleteCourse', e); }
+    await supabaseClient.from('attendance').delete().in('course_id', ids);
+    await supabaseClient.from('participants').delete().in('course_id', ids);
+    const { error } = await supabaseClient.from('courses').delete().in('id', ids);
+    if (error) { console.error('cloudDeleteCourses', error); toast('تنبيه: لم تُحذف الدورات من السحابة (' + error.message + ')، ستُعاد المحاولة تلقائياً', 'error'); return false; }
+    const chk = await supabaseClient.from('courses').select('id').in('id', ids);
+    if (chk.data && chk.data.length) { console.warn('بقيت دورات في السحابة بعد الحذف (صلاحيات RLS؟)', chk.data); toast('تنبيه: السحابة لم تسمح بحذف ' + chk.data.length + ' دورة (تحقق من صلاحيات الحذف في Supabase)', 'error'); return false; }
+    DB.tombstones.courses = DB.tombstones.courses.filter(x => !ids.includes(x)); save(); return true;
+  } catch (e) { console.error('cloudDeleteCourses', e); return false; }
 }
 async function cloudSaveParticipant(courseId, p) {
   try {
@@ -1915,11 +2001,15 @@ async function cloudSaveParticipant(courseId, p) {
   } catch (e) { console.error('cloudSaveParticipant', e); }
 }
 async function cloudDeleteParticipant(courseId, personalId) {
+  const tb = tomb('participants'), k = courseId + '|' + personalId; if (!tb.includes(k)) { tb.push(k); save(); }
   try {
     await supabaseClient.from('attendance').delete().eq('course_id', courseId).eq('participant_id', personalId);
     const { error } = await supabaseClient.from('participants').delete().eq('course_id', courseId).eq('personal_id', personalId);
-    if (error) { console.error('cloudDeleteParticipant', error); toast('تنبيه: لم يُحذف المشارك من السحابة (' + error.message + ')', 'error'); }
-  } catch (e) { console.error('cloudDeleteParticipant', e); }
+    if (error) { console.error('cloudDeleteParticipant', error); toast('تنبيه: لم يُحذف المشارك من السحابة (' + error.message + ')', 'error'); return false; }
+    const chk = await supabaseClient.from('participants').select('personal_id').eq('course_id', courseId).eq('personal_id', personalId).limit(1);
+    if (chk.data && chk.data.length) { console.warn('لم تسمح السحابة بحذف المشارك', k); return false; }
+    DB.tombstones.participants = DB.tombstones.participants.filter(x => x !== k); save(); return true;
+  } catch (e) { console.error('cloudDeleteParticipant', e); return false; }
 }
 async function cloudSaveAttendance(courseId, date, personalId, status) {
   try {
@@ -1994,6 +2084,7 @@ async function cloudUpdateAccountBase(old, nw) {
 // ===== كتابة مجمّعة للسحابة (تمنع فقدان البيانات عند الاستيراد الكبير) =====
 const _partBuf = new Map(); let _partTimer = null;
 cloudSaveParticipant = function (courseId, p) {
+  if (DB.tombstones && DB.tombstones.participants) DB.tombstones.participants = DB.tombstones.participants.filter(x => x !== courseId + '|' + p.personalId);
   _partBuf.set(courseId + '|' + p.personalId, { courseId, p });
   clearTimeout(_partTimer); _partTimer = setTimeout(flushParticipants, 500);
   return Promise.resolve();
