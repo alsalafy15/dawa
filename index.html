@@ -269,7 +269,7 @@ img,svg,canvas,video{max-width:100%}
     <div class="text-center mb-6"><div class="logo-badge mx-auto mb-3" style="width:108px;height:108px"><svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="شعار معهد الدعوة والعلوم الإسلامية"><defs><linearGradient id="gBL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a02c23"/><stop offset="1" stop-color="#3f0a07"/></linearGradient><linearGradient id="gGL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e3a6"/><stop offset=".5" stop-color="#c9a24b"/><stop offset="1" stop-color="#9a7421"/></linearGradient><radialGradient id="gOL" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff8dc"/><stop offset=".55" stop-color="#f6e3a6"/><stop offset="1" stop-color="#c9a24b" stop-opacity="0"/></radialGradient></defs><circle cx="60" cy="60" r="57" fill="url(#gBL)" stroke="url(#gGL)" stroke-width="3"/><circle cx="60" cy="60" r="51" fill="none" stroke="url(#gGL)" stroke-width=".8" stroke-dasharray="1.5 3"/><circle cx="60" cy="49" r="24" fill="url(#gOL)" opacity=".55"/><g stroke="#e8c76d" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M47.6 45.0 L39.1 42.2"/><path d="M50.3 40.3 L41.4 32.3"/><path d="M54.7 37.1 L48.6 23.4"/><path d="M60.0 36.0 L60.0 18.0"/><path d="M65.3 37.1 L71.4 23.4"/><path d="M69.7 40.3 L78.6 32.3"/><path d="M72.4 45.0 L80.9 42.2"/></g><circle cx="60" cy="49" r="8" fill="url(#gOL)"/><circle cx="60" cy="49" r="4.6" fill="#fff8dc"/><path d="M60 64 C51 58 37 58 26 63 L26 92 C37 87 51 88 60 95 Z" fill="#fdf5f4" stroke="url(#gGL)" stroke-width="1.6" stroke-linejoin="round"/><path d="M60 64 C69 58 83 58 94 63 L94 92 C83 87 69 88 60 95 Z" fill="#f5d0cc" stroke="url(#gGL)" stroke-width="1.6" stroke-linejoin="round"/><g stroke="#9a7421" stroke-width="1.2" stroke-linecap="round" fill="none" opacity=".75"><path d="M33 70 Q45 68 54 72"/><path d="M33 77 Q45 75 54 79"/><path d="M33 84 Q45 82 54 86"/><path d="M66 72 Q75 68 87 70"/><path d="M66 79 Q75 75 87 77"/><path d="M66 86 Q75 82 87 84"/></g><path d="M60 64 V95" stroke="#c9a24b" stroke-width="2"/></svg></div><h1 class="text-2xl font-bold" style="color:#5e130e">معهد الدعوة والعلوم الإسلامية</h1><p class="text-gray-500 text-sm mt-1">النظام الإداري التدريبي</p></div>
     <form id="loginForm" onsubmit="handleLogin(event)">
       <div class="mb-3"><label class="block text-sm font-semibold mb-1">الرقم الشخصي (أو اسم المستخدم)</label><input type="text" id="loginUser" class="input" required autocomplete="username"></div>
-      <div class="mb-4"><label class="block text-sm font-semibold mb-1">كلمة المرور</label><input type="password" id="loginPass" class="input" required autocomplete="current-password"><p class="text-xs text-gray-500 mt-1">أول دخول: كلمة المرور = رقمك الشخصي، ويمكنك تغييرها بعد الدخول.</p></div>
+      <div class="mb-4"><label class="block text-sm font-semibold mb-1">كلمة المرور</label><input type="password" id="loginPass" class="input" required autocomplete="current-password"><p class="text-xs text-gray-500 mt-1">أول دخول: كلمة المرور = رقمك الشخصي، وإن كان أقل من 6 أرقام تُكمَّل بأصفار بادئة (مثال: 5454 ← 005454)، ويمكنك تغييرها بعد الدخول.</p></div>
       <button type="submit" class="btn btn-primary btn-lg w-full"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</button>
     </form>
     <div class="mt-4 pt-3 border-t text-center"><button onclick="openCertPortalFromLogin()" class="btn btn-gray btn-sm w-full"><i class="fas fa-certificate"></i> استعلام عن الشهادات</button></div>
@@ -360,10 +360,21 @@ function load() {
   migrateUsers(); save();
 }
 function migrateUsers() {
-  DB.users.forEach(u => { if (u.role === 'teacher' || u.role === 'student') { if (!u.personalId) u.personalId = 'P' + u.id.slice(-8); if (!u.credentialsCustomized) { u.username = u.personalId; u.password = u.personalId; } } });
-  DB.courses.forEach(c => c.participants.forEach(p => { if (p.personalId && !DB.users.some(u => u.personalId === p.personalId)) DB.users.push({ id: uid(), name: p.name, role: 'student', personalId: p.personalId, username: p.personalId, password: p.personalId, phone: p.phone || '', credentialsCustomized: false }); }));
+  DB.users.forEach(u => { if (u.role === 'teacher' || u.role === 'student') { if (!u.personalId) u.personalId = 'P' + u.id.slice(-8); if (!u.credentialsCustomized) { u.username = u.personalId; u.password = defaultPasswordFor(u.personalId); } } });
+  DB.courses.forEach(c => c.participants.forEach(p => { if (p.personalId && !DB.users.some(u => u.personalId === p.personalId)) DB.users.push({ id: uid(), name: p.name, role: 'student', personalId: p.personalId, username: p.personalId, password: defaultPasswordFor(p.personalId), phone: p.phone || '', credentialsCustomized: false }); }));
 }
 function uid() { try { if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); } catch (e) {} return 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+// كلمة المرور الأولية = الرقم الشخصي، مع إكمال الأصفار البادئة لأن Supabase يرفض ما يقل عن 6 خانات
+function defaultPasswordFor(id) {
+  const s = String(id == null ? '' : id).trim();
+  if (!s) return '';
+  return s.length < 6 ? s.padStart(6, '0') : s;
+}
+// عند إدخال كلمة مرور يدوياً: لا نُكمل الأصفار إلا إذا كانت أرقاماً، حتى لا تتغيّر كلمة مرور مخصصة بصمت
+function padNumericPassword(pwd) {
+  const s = String(pwd == null ? '' : pwd).trim();
+  return /^\d+$/.test(s) ? defaultPasswordFor(s) : s;
+}
 function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function getCourse(id) { return DB.courses.find(c => c.id === id); }
 function getUser(id) { return DB.users.find(u => u.id === id); }
@@ -728,7 +739,7 @@ function seed() {
     { id: 'u2', name: 'موظف التدريب', username: 'employee', password: 'emp123', role: 'employee' },
     { id: 'u3', name: 'أ. أحمد محمد', username: '1234000001', password: '1234000001', personalId: '1234000001', phone: '55123456', role: 'teacher', credentialsCustomized: true }
   ];
-  people.forEach((p, i) => users.push({ id: 'u_stu_' + i, name: p.name, username: p.personalId, password: p.personalId, personalId: p.personalId, phone: p.phone, role: 'student', credentialsCustomized: false }));
+  people.forEach((p, i) => users.push({ id: 'u_stu_' + i, name: p.name, username: p.personalId, password: defaultPasswordFor(p.personalId), personalId: p.personalId, phone: p.phone, role: 'student', credentialsCustomized: false }));
   const categories = {}; CATEGORIES.forEach(c => categories[c] = []);
   categories['إمام قطري'] = people.slice(0, 3).map(p => ({ ...p, id: uid() }));
   const teachers = [{ id: uid(), name: 'أ. أحمد محمد', phone: '55123456', specialty: 'الدعوة', email: 'ahmed@example.com' }];
@@ -764,7 +775,7 @@ function renderNav() {
     html += `<div class="cat"><i class="fas fa-certificate ml-1"></i> الشهادات</div>`;
     if (hasPerm('manage_cert_design')) html += `<a class="nav-item ${state.view==='certDesign'?'active':''}" onclick="goTo('certDesign')"><i class="fas fa-palette ml-2"></i> مصمم الشهادات</a>`;
     if (hasPerm('manage_cert_portal')) html += `<a class="nav-item ${state.view==='certPortal'?'active':''}" onclick="goTo('certPortal')"><i class="fas fa-award ml-2"></i> إصدار شهادة</a>`;
-    html += `<div class="cat"><i class="fas fa-cog ml-1"></i> الحساب</div><a class="nav-item ${state.view==='changePassword'?'active':''}" onclick="goTo('changePassword')"><i class="fas fa-key ml-2"></i> تغيير كلمة المرور</a>`;
+    html += `<a class="nav-item" onclick="syncNow()"><i class="fas fa-cloud-arrow-down ml-2"></i> مزامنة البيانات</a><div class="cat"><i class="fas fa-cog ml-1"></i> الحساب</div><a class="nav-item ${state.view==='changePassword'?'active':''}" onclick="goTo('changePassword')"><i class="fas fa-key ml-2"></i> تغيير كلمة المرور</a>`;
   } else if (r === 'teacher') {
     html = `<a class="nav-item ${state.view==='dashboard'?'active':''}" onclick="goTo('dashboard')"><i class="fas fa-home ml-2"></i> لوحة التحكم</a><div class="cat"><i class="fas fa-chalkboard-teacher ml-1"></i> بوابة المدرس</div><a class="nav-item ${state.view==='myCourses'?'active':''}" onclick="goTo('myCourses')"><i class="fas fa-book ml-2"></i> دوراتي</a><a class="nav-item ${state.view==='messaging'?'active':''}" onclick="goTo('messaging')"><i class="fas fa-envelope ml-2"></i> رسائلي</a><a class="nav-item ${state.view==='myCertificates'?'active':''}" onclick="goTo('myCertificates')"><i class="fas fa-certificate ml-2"></i> شهادات الشكر</a><div class="cat"><i class="fas fa-cog ml-1"></i> الحساب</div><a class="nav-item ${state.view==='changePassword'?'active':''}" onclick="goTo('changePassword')"><i class="fas fa-key ml-2"></i> تغيير كلمة المرور</a>`;
   } else {
@@ -941,16 +952,16 @@ function renderEmployees() {
   document.getElementById('mainContent').innerHTML = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2"><h1 class="text-2xl font-bold" style="color:#5e130e"><i class="fas fa-id-badge ml-1"></i> الموظفون (${DB.hrEmployees.length})</h1><div class="flex gap-2 flex-wrap"><button class="btn btn-primary" onclick="openHrEmployeeForm()"><i class="fas fa-plus"></i> إضافة</button><button class="btn btn-warn" onclick="openEmployeeImport()"><i class="fas fa-file-excel"></i> استيراد</button><button class="btn btn-danger" onclick="bulkDeleteHr()"><i class="fas fa-trash"></i> حذف المحدد</button></div></div><div class="card p-3 mb-3"><input class="input" placeholder="بحث..." value="${esc(state.empSearch||'')}" id="empSearchBox" oninput="state.empSearch=this.value; keepFocus('empSearchBox',renderEmployees)"></div><div class="flex justify-end mb-2">${colsToggleBtn('emp')}</div><div class="card overflow-x-auto"><table class="resizable-table" data-table-id="emp"><thead><tr><th data-col-key="select" style="width:40px"><input type="checkbox" data-select-all="true"></th><th data-col-key="idx">#</th><th data-col-key="name">الاسم</th><th data-col-key="nationality">الجنسية</th><th data-col-key="pid">الرقم الشخصي</th><th data-col-key="empno">رقم الوظيفة</th><th data-col-key="jobTitle">المسمى</th><th data-col-key="department">الشعبة</th><th data-col-key="username">المستخدم</th><th data-col-key="password">كلمة المرور</th><th data-col-key="actions">إجراءات</th></tr></thead><tbody>${filtered.slice(0, 500).map((h,i) => { const u = DB.users.find(x => x.personalId === h.personalId); return `<tr><td><input type="checkbox" class="hr-cb" data-id="${h.id}"></td><td>${i+1}</td><td class="font-semibold">${esc(h.name)}</td><td>${esc(h.nationality)||'-'}</td><td>${esc(h.personalId)}</td><td>${esc(h.employeeNumber)||'-'}</td><td>${esc(h.jobTitle)||'-'}</td><td>${esc(h.department)||'-'}</td><td>${u?esc(u.username):'-'}</td><td>${u?pwCell(u.password):'-'}</td><td class="whitespace-nowrap"><button class="action-btn action-edit" onclick="openHrEmployeeForm('${h.id}')"><i class="fas fa-edit"></i></button>${u ? `<button class="action-btn action-key" onclick="openAdminResetPassword('${u.id}')"><i class="fas fa-key"></i></button>` : `<button class="action-btn action-view" onclick="createHrLogin('${h.id}')"><i class="fas fa-user-plus"></i></button>`}<button class="action-btn action-delete" onclick="deleteHr('${h.id}')"><i class="fas fa-trash"></i></button></td></tr>`; }).join('') || '<tr><td colspan="11" class="text-center text-gray-400 py-6">لا يوجد</td></tr>'}</tbody></table></div>`;
   initTableResizers();
 }
-function openEmployeeImport() { openUnifiedImport({ title: 'استيراد موظفين', onImport: (items) => { let added = 0, skipped = 0; items.forEach(p => { if (!p.name || !p.personalId) { skipped++; return; } if (DB.hrEmployees.some(h => h.personalId === p.personalId)) { skipped++; return; } DB.hrEmployees.push({ id: uid(), name: p.name, nationality: p.nationality || '', personalId: p.personalId, employeeNumber: p.employeeNumber || '', phone: p.phone || '', jobTitle: p.jobTitle || '', department: p.department || '' }); if (!DB.users.some(u => u.personalId === p.personalId)) { DB.users.push({ id: uid(), name: p.name, role: 'employee', personalId: p.personalId, username: p.personalId, password: p.personalId, phone: p.phone || '', credentialsCustomized: false }); cloudCreateLogin(p.personalId, p.personalId, p.name, 'employee'); } added++; }); save(); renderEmployees(); toast(`تم ${added}${skipped ? ' — تجاهل ' + skipped : ''}`); } }); }
+function openEmployeeImport() { openUnifiedImport({ title: 'استيراد موظفين', onImport: (items) => { let added = 0, skipped = 0; items.forEach(p => { if (!p.name || !p.personalId) { skipped++; return; } if (DB.hrEmployees.some(h => h.personalId === p.personalId)) { skipped++; return; } DB.hrEmployees.push({ id: uid(), name: p.name, nationality: p.nationality || '', personalId: p.personalId, employeeNumber: p.employeeNumber || '', phone: p.phone || '', jobTitle: p.jobTitle || '', department: p.department || '' }); if (!DB.users.some(u => u.personalId === p.personalId)) { DB.users.push({ id: uid(), name: p.name, role: 'employee', personalId: p.personalId, username: p.personalId, password: defaultPasswordFor(p.personalId), phone: p.phone || '', credentialsCustomized: false }); cloudCreateLogin(p.personalId, defaultPasswordFor(p.personalId), p.name, 'employee', p.personalId); } added++; }); save(); renderEmployees(); toast(`تم ${added}${skipped ? ' — تجاهل ' + skipped : ''}`); } }); }
 function openHrEmployeeForm(id) {
   const h = id ? DB.hrEmployees.find(x => x.id === id) : { name: '', nationality: 'قطري', personalId: '', employeeNumber: '', phone: '', jobTitle: '', department: '' };
   const u = id ? DB.users.find(x => x.personalId === h.personalId) : null;
   document.getElementById('modalRoot').innerHTML = `<div class="modal" onclick="if(event.target===this)closeModal()"><div class="modal-content p-6 max-w-lg"><h2 class="text-xl font-bold mb-4" style="color:#5e130e">${id?'تعديل':'إضافة'} موظف</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label class="text-sm font-semibold">الاسم</label><input class="input" id="h_name" value="${esc(h.name)}"></div><div><label class="text-sm font-semibold">الجنسية</label><input class="input" id="h_nat" value="${esc(h.nationality)}"></div><div><label class="text-sm font-semibold">الرقم الشخصي *</label><input class="input" id="h_pid" value="${esc(h.personalId)}"></div><div><label class="text-sm font-semibold">رقم الوظيفة</label><input class="input" id="h_empno" value="${esc(h.employeeNumber)}"></div><div><label class="text-sm font-semibold">الجوال</label><input class="input" id="h_phone" value="${esc(h.phone)}"></div><div><label class="text-sm font-semibold">المسمى</label><input class="input" id="h_jobTitle" value="${esc(h.jobTitle)}"></div><div class="md:col-span-2"><label class="text-sm font-semibold">الشعبة</label><input class="input" id="h_department" value="${esc(h.department)}"></div></div>${u ? `<p class="text-xs mt-2 p-2 rounded" style="background:#fbe9e7">المستخدم: <strong>${esc(u.username)}</strong></p>` : ''}<div class="flex justify-end gap-2 mt-4"><button class="btn btn-gray" onclick="closeModal()">إلغاء</button><button class="btn btn-primary" onclick="saveHrEmployee('${id||''}')"><i class="fas fa-save"></i> حفظ</button></div></div></div>`;
 }
-function saveHrEmployee(id) { const g = k => document.getElementById(k).value.trim(); const data = { name: g('h_name'), nationality: g('h_nat'), personalId: g('h_pid'), employeeNumber: g('h_empno'), phone: g('h_phone'), jobTitle: g('h_jobTitle'), department: g('h_department') }; if (!data.name || !data.personalId) return toast('مطلوب', 'error'); let isNewUser = false; if (id) { Object.assign(DB.hrEmployees.find(x => x.id === id), data); const u = DB.users.find(x => x.personalId === data.personalId); if (u) { u.name = data.name; u.phone = data.phone; } } else { DB.hrEmployees.push({ id: uid(), ...data }); if (!DB.users.some(u => u.personalId === data.personalId)) { DB.users.push({ id: uid(), name: data.name, role: 'employee', personalId: data.personalId, username: data.personalId, password: data.personalId, phone: data.phone, credentialsCustomized: false }); isNewUser = true; } } save(); closeModal(); renderEmployees(); toast('تم'); if (isNewUser) cloudCreateLogin(data.personalId, data.personalId, data.name, 'employee'); }
+function saveHrEmployee(id) { const g = k => document.getElementById(k).value.trim(); const data = { name: g('h_name'), nationality: g('h_nat'), personalId: g('h_pid'), employeeNumber: g('h_empno'), phone: g('h_phone'), jobTitle: g('h_jobTitle'), department: g('h_department') }; if (!data.name || !data.personalId) return toast('مطلوب', 'error'); let isNewUser = false; if (id) { Object.assign(DB.hrEmployees.find(x => x.id === id), data); const u = DB.users.find(x => x.personalId === data.personalId); if (u) { u.name = data.name; u.phone = data.phone; } } else { DB.hrEmployees.push({ id: uid(), ...data }); if (!DB.users.some(u => u.personalId === data.personalId)) { DB.users.push({ id: uid(), name: data.name, role: 'employee', personalId: data.personalId, username: data.personalId, password: defaultPasswordFor(data.personalId), phone: data.phone, credentialsCustomized: false }); isNewUser = true; } } save(); closeModal(); renderEmployees(); toast('تم'); if (isNewUser) cloudCreateLogin(data.personalId, defaultPasswordFor(data.personalId), data.name, 'employee', data.personalId); }
 function deleteHr(id) { if (!confirm('حذف؟')) return; DB.hrEmployees = DB.hrEmployees.filter(x => x.id !== id); save(); renderEmployees(); }
 function bulkDeleteHr() { const cbs = getSelected('hr-cb'); if (!cbs.length) return toast('لم تختر', 'error'); if (!confirm(`حذف ${cbs.length}؟`)) return; const ids = cbs.map(cb => cb.dataset.id); DB.hrEmployees = DB.hrEmployees.filter(x => !ids.includes(x.id)); save(); renderEmployees(); }
-function createHrLogin(hid) { const h = DB.hrEmployees.find(x => x.id === hid); if (!h) return; if (DB.users.some(u => u.personalId === h.personalId)) return toast('موجود', 'error'); DB.users.push({ id: uid(), name: h.name, role: 'employee', personalId: h.personalId, username: h.personalId, password: h.personalId, phone: h.phone, credentialsCustomized: false }); save(); renderEmployees(); toast('تم'); cloudCreateLogin(h.personalId, h.personalId, h.name, 'employee'); }
+function createHrLogin(hid) { const h = DB.hrEmployees.find(x => x.id === hid); if (!h) return; if (DB.users.some(u => u.personalId === h.personalId)) return toast('موجود', 'error'); DB.users.push({ id: uid(), name: h.name, role: 'employee', personalId: h.personalId, username: h.personalId, password: defaultPasswordFor(h.personalId), phone: h.phone, credentialsCustomized: false }); save(); renderEmployees(); toast('تم'); cloudCreateLogin(h.personalId, defaultPasswordFor(h.personalId), h.name, 'employee', h.personalId); }
 
 // ============ ROLES ============
 function renderRoles() {
@@ -1065,7 +1076,7 @@ function renderOverviewTab(c) {
   let rank = 1; rows.forEach((r, i) => { if (i > 0 && r.score < rows[i-1].score) rank = i + 1; r.rank = rank; });
   return `<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">${infoCard('البرنامج', c.program)}${infoCard('المدة', c.duration)}${infoCard('البدء', c.startDate)}${infoCard('الانتهاء', c.endDate)}${infoCard('المدرس', teacherNameOf(c))}${infoCard('مشرف أكاديمي', c.academicSupervisor)}${infoCard('مشرف إداري', c.adminSupervisor)}${infoCard('مشرف رقابي', c.controlSupervisor)}${infoCard('الجهة', c.beneficiary)}${infoCard('الفئة', c.targetGroup)}${infoCard('النوع', c.courseType)}${infoCard('التوقيت', c.time)}</div><div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-bold" style="color:#5e130e">كشف المشاركين (${rows.length})</h3><div class="flex gap-2"><button class="btn btn-primary btn-sm" onclick="openNomManualForm('${c.id}')"><i class="fas fa-plus"></i> إضافة</button><button class="btn btn-green btn-sm" onclick="openCourseImport('${c.id}')"><i class="fas fa-download"></i> استيراد</button><button class="btn btn-blue btn-sm" onclick="printReport('${c.id}')"><i class="fas fa-print"></i> الكشف</button></div></div><div class="overflow-x-auto"><table class="resizable-table" data-table-id="course_participants"><thead><tr><th data-col-key="idx">م</th><th data-col-key="name">الاسم</th><th data-col-key="nationality">الجنسية</th><th data-col-key="pid">الرقم الشخصي</th><th data-col-key="emp">الوظيفة</th><th data-col-key="phone">الجوال</th><th data-col-key="score">الدرجة</th><th data-col-key="rank">الترتيب</th><th data-col-key="attendance">الحضور</th><th data-col-key="actions">إجراءات</th></tr></thead><tbody>${rows.map((p, i) => { const l = getRankLabel(p.rank, p.score); return `<tr><td>${i+1}</td><td class="font-semibold">${esc(p.name)}</td><td>${esc(p.nationality) || '-'}</td><td>${esc(p.personalId)}</td><td>${esc(p.employeeNumber) || '-'}</td><td>${esc(p.phone) || '-'}</td><td>${p.score}</td><td><span class="badge ${l.cls}">${l.text}</span></td><td><span class="badge ${p.att >= 75 ? 'badge-green' : p.att >= 50 ? 'badge-yellow' : 'badge-red'}">${p.att}%</span></td><td><button class="action-btn action-edit" onclick="openNomManualForm('${c.id}','${esc(p.personalId)}')"><i class="fas fa-edit"></i></button><button class="action-btn action-delete" onclick="deleteNominee('${c.id}','${esc(p.personalId)}')"><i class="fas fa-trash"></i></button></td></tr>`; }).join('') || '<tr><td colspan="10" class="text-center text-gray-400 py-6">لا يوجد</td></tr>'}</tbody></table></div>`;
 }
-function openCourseImport(cid) { openUnifiedImport({ title: 'استيراد مشاركين', onImport: (items) => { const c = getCourse(cid); let count = 0; items.forEach(p => { if (c.participants.some(x => x.personalId === p.personalId)) return; c.participants.push({ name: p.name, nationality: p.nationality || '', personalId: p.personalId, employeeNumber: p.employeeNumber || '', phone: p.phone || '' }); if (!DB.users.some(u => u.personalId === p.personalId)) DB.users.push({ id: uid(), name: p.name, role: 'student', personalId: p.personalId, username: p.personalId, password: p.personalId, phone: p.phone || '', credentialsCustomized: false }); count++; }); save(); renderCourseDetail(); toast(`تم ${count}`); } }); }
+function openCourseImport(cid) { openUnifiedImport({ title: 'استيراد مشاركين', onImport: (items) => { const c = getCourse(cid); let count = 0; items.forEach(p => { if (!p.name || !p.personalId) return; if (c.participants.some(x => x.personalId === p.personalId)) return; const rec = { name: p.name, nationality: p.nationality || '', personalId: p.personalId, employeeNumber: p.employeeNumber || '', phone: p.phone || '' }; c.participants.push(rec); cloudSaveParticipant(cid, rec); if (!DB.users.some(u => u.personalId === p.personalId)) { DB.users.push({ id: uid(), name: p.name, role: 'student', personalId: p.personalId, username: p.personalId, password: defaultPasswordFor(p.personalId), phone: p.phone || '', credentialsCustomized: false }); cloudCreateLogin(p.personalId, defaultPasswordFor(p.personalId), p.name, 'student', p.personalId); } count++; }); save(); renderCourseDetail(); toast(`تم ${count}`); } }); }
 function renderAttendanceTab(c) {
   const planDays = parseDaysBetween(c.startDate, c.endDate); const today = todayStr(); const sel = state.attendanceDate || (planDays.find(d => d === today) || planDays[0] || today);
   return `<div class="flex flex-wrap gap-2 items-end mb-3"><input type="date" class="input" style="width:auto" value="${sel}" min="${c.startDate}" max="${c.endDate}" onchange="state.attendanceDate=this.value; renderCourseDetail()"><button class="btn btn-green btn-sm" onclick="markAll('${c.id}','${sel}','present'); renderCourseDetail()">حاضر الكل</button><button class="btn btn-danger btn-sm" onclick="markAll('${c.id}','${sel}','absent'); renderCourseDetail()">غائب الكل</button></div><div class="overflow-x-auto"><table class="resizable-table"><thead><tr><th>#</th><th>الاسم</th><th>الجنسية</th><th>الرقم الشخصي</th><th>رقم الوظيفة</th><th>التحضير</th><th>نسبة الحضور</th><th>تذكير</th></tr></thead><tbody>${c.participants.map((p,i) => { const pct = computeAttendance(c, p.personalId); const st = (c.attendance[sel]||{})[p.personalId]; return `<tr><td>${i+1}</td><td>${esc(p.name)}</td><td>${esc(p.nationality) || '-'}</td><td>${esc(p.personalId)}</td><td>${esc(p.employeeNumber) || '-'}</td><td><button class="att-btn ${st==='present'?'att-btn-present':''}" onclick="toggleAtt('${c.id}','${sel}','${esc(p.personalId)}','present'); renderCourseDetail()">حاضر</button><button class="att-btn ${st==='absent'?'att-btn-absent':''}" onclick="toggleAtt('${c.id}','${sel}','${esc(p.personalId)}','absent'); renderCourseDetail()">غائب</button><button class="att-btn ${st==='excused'?'att-btn-excused':''}" onclick="toggleAtt('${c.id}','${sel}','${esc(p.personalId)}','excused'); renderCourseDetail()">مستأذن</button></td><td><strong style="color:${pct>=75?'#065f46':'#991b1b'}">${pct}%</strong></td><td><button class="btn btn-whatsapp btn-sm" onclick="sendWhatsApp('${esc(p.phone)}','${esc(p.name)}','${esc(c.name)}','${sel}')"><i class="fab fa-whatsapp"></i></button></td></tr>`; }).join('') || '<tr><td colspan="8" class="text-center text-gray-400 py-4">لا يوجد</td></tr>'}</tbody></table></div>`;
@@ -1091,12 +1102,12 @@ function renderNomination() {
   document.getElementById('mainContent').innerHTML = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2"><h1 class="text-2xl font-bold" style="color:#5e130e">ترشيح المشاركين</h1><div class="flex gap-2 flex-wrap"><select class="input" style="width:auto" onchange="state.nominationCourseId=this.value; renderNomination()">${courses.map(co => `<option value="${co.id}" ${co.id===cid?'selected':''}>${esc(co.name)} (${co.year})</option>`).join('')}</select>${colsToggleBtn('nomination')}${c ? `<button class="btn btn-primary" onclick="openNomImport('${c.id}')"><i class="fas fa-download"></i> استيراد</button><button class="btn btn-warn" onclick="openNomManualForm('${c.id}')"><i class="fas fa-plus"></i> إضافة</button><button class="btn btn-danger" onclick="bulkDeleteNominees('${c.id}')"><i class="fas fa-trash"></i> حذف</button>` : ''}</div></div>${c ? `<div class="card overflow-x-auto"><table class="resizable-table" data-table-id="nomination"><thead><tr><th data-col-key="select" style="width:40px"><input type="checkbox" data-select-all="true"></th><th data-col-key="idx">م</th><th data-col-key="name">الاسم</th><th data-col-key="nationality">الجنسية</th><th data-col-key="pid">الرقم الشخصي</th><th data-col-key="emp">الوظيفة</th><th data-col-key="phone">الجوال</th><th data-col-key="actions">إجراءات</th></tr></thead><tbody>${c.participants.map((p,i) => `<tr><td><input type="checkbox" class="nom-cb" data-pid="${esc(p.personalId)}"></td><td>${i+1}</td><td class="font-semibold">${esc(p.name)}</td><td>${esc(p.nationality)}</td><td>${esc(p.personalId)}</td><td>${esc(p.employeeNumber)}</td><td>${esc(p.phone)}</td><td><button class="action-btn action-edit" onclick="openNomManualForm('${c.id}','${esc(p.personalId)}')"><i class="fas fa-edit"></i></button><button class="action-btn action-delete" onclick="deleteNominee('${c.id}','${esc(p.personalId)}')"><i class="fas fa-trash"></i></button></td></tr>`).join('') || '<tr><td colspan="8" class="text-center text-gray-400 py-4">لا يوجد</td></tr>'}</tbody></table></div>` : ''}`;
   initTableResizers();
 }
-function openNomImport(cid) { openUnifiedImport({ title: 'استيراد مرشحين', onImport: (items) => { const c = getCourse(cid); let count = 0; items.forEach(p => { if (c.participants.some(x => x.personalId === p.personalId)) return; const rec = { name: p.name, nationality: p.nationality || '', personalId: p.personalId, employeeNumber: p.employeeNumber || '', phone: p.phone || '' }; c.participants.push(rec); cloudSaveParticipant(cid, rec); if (!DB.users.some(u => u.personalId === p.personalId)) { DB.users.push({ id: uid(), name: p.name, role: 'student', personalId: p.personalId, username: p.personalId, password: p.personalId, phone: p.phone || '', credentialsCustomized: false }); cloudCreateLogin(p.personalId, p.personalId, p.name, 'student'); } count++; }); save(); renderNomination(); toast(`تم ${count}`); } }); }
+function openNomImport(cid) { openUnifiedImport({ title: 'استيراد مرشحين', onImport: (items) => { const c = getCourse(cid); let count = 0; items.forEach(p => { if (!p.name || !p.personalId) return; if (c.participants.some(x => x.personalId === p.personalId)) return; const rec = { name: p.name, nationality: p.nationality || '', personalId: p.personalId, employeeNumber: p.employeeNumber || '', phone: p.phone || '' }; c.participants.push(rec); cloudSaveParticipant(cid, rec); if (!DB.users.some(u => u.personalId === p.personalId)) { DB.users.push({ id: uid(), name: p.name, role: 'student', personalId: p.personalId, username: p.personalId, password: defaultPasswordFor(p.personalId), phone: p.phone || '', credentialsCustomized: false }); cloudCreateLogin(p.personalId, defaultPasswordFor(p.personalId), p.name, 'student', p.personalId); } count++; }); save(); renderNomination(); toast(`تم ${count}`); } }); }
 function openNomManualForm(cid, personalId) {
   const c = getCourse(cid); const p = personalId ? c.participants.find(x => x.personalId === personalId) : { name: '', nationality: '', personalId: '', employeeNumber: '', phone: '' };
   document.getElementById('modalRoot').innerHTML = `<div class="modal" onclick="if(event.target===this)closeModal()"><div class="modal-content p-6 max-w-lg"><h2 class="text-xl font-bold mb-4" style="color:#5e130e">${personalId?'تعديل':'إضافة'} مشارك</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label class="text-sm font-semibold">الاسم</label><input class="input" id="n_name" value="${esc(p.name)}"></div><div><label class="text-sm font-semibold">الجنسية</label><input class="input" id="n_nat" value="${esc(p.nationality)}"></div><div><label class="text-sm font-semibold">الرقم الشخصي</label><input class="input" id="n_pid" value="${esc(p.personalId)}" ${personalId?'readonly':''}></div><div><label class="text-sm font-semibold">الوظيفة</label><input class="input" id="n_emp" value="${esc(p.employeeNumber)}"></div><div class="md:col-span-2"><label class="text-sm font-semibold">الجوال</label><input class="input" id="n_phone" value="${esc(p.phone)}"></div></div><div class="flex justify-end gap-2 mt-4"><button class="btn btn-gray" onclick="closeModal()">إلغاء</button><button class="btn btn-primary" onclick="saveNomManual('${cid}','${personalId || ''}')"><i class="fas fa-save"></i> حفظ</button></div></div></div>`;
 }
-function saveNomManual(cid, personalId) { const c = getCourse(cid); const g = k => document.getElementById(k).value.trim(); const data = { name: g('n_name'), nationality: g('n_nat'), personalId: g('n_pid'), employeeNumber: g('n_emp'), phone: g('n_phone') }; if (!data.name || !data.personalId) return toast('مطلوب', 'error'); let isNewUser = false; if (personalId) { const p = c.participants.find(x => x.personalId === personalId); if (p) Object.assign(p, data); } else { if (c.participants.find(x => x.personalId === data.personalId)) return toast('موجود', 'error'); c.participants.push(data); if (!DB.users.some(u => u.personalId === data.personalId)) { DB.users.push({ id: uid(), name: data.name, role: 'student', personalId: data.personalId, username: data.personalId, password: data.personalId, phone: data.phone, credentialsCustomized: false }); isNewUser = true; } } save(); closeModal(); if (state.courseId) renderCourseDetail(); else renderNomination(); toast('تم'); cloudSaveParticipant(cid, data); if (isNewUser) cloudCreateLogin(data.personalId, data.personalId, data.name, 'student'); }
+function saveNomManual(cid, personalId) { const c = getCourse(cid); const g = k => document.getElementById(k).value.trim(); const data = { name: g('n_name'), nationality: g('n_nat'), personalId: g('n_pid'), employeeNumber: g('n_emp'), phone: g('n_phone') }; if (!data.name || !data.personalId) return toast('مطلوب', 'error'); let isNewUser = false; if (personalId) { const p = c.participants.find(x => x.personalId === personalId); if (p) Object.assign(p, data); } else { if (c.participants.find(x => x.personalId === data.personalId)) return toast('موجود', 'error'); c.participants.push(data); if (!DB.users.some(u => u.personalId === data.personalId)) { DB.users.push({ id: uid(), name: data.name, role: 'student', personalId: data.personalId, username: data.personalId, password: defaultPasswordFor(data.personalId), phone: data.phone, credentialsCustomized: false }); isNewUser = true; } } save(); closeModal(); if (state.courseId) renderCourseDetail(); else renderNomination(); toast('تم'); cloudSaveParticipant(cid, data); if (isNewUser) cloudCreateLogin(data.personalId, defaultPasswordFor(data.personalId), data.name, 'student', data.personalId); }
 function deleteNominee(cid, pid) { if (!confirm('حذف؟')) return; const c = getCourse(cid); c.participants = c.participants.filter(p => p.personalId !== pid); Object.keys(c.attendance).forEach(d => delete c.attendance[d][pid]); const exam = getExamByCourse(cid); if (exam?.results) delete exam.results[pid]; save(); if (state.courseId) renderCourseDetail(); else renderNomination(); cloudDeleteParticipant(cid, pid); }
 function bulkDeleteNominees(cid) { const cbs = getSelected('nom-cb'); if (!cbs.length) return toast('لم تختر', 'error'); if (!confirm(`حذف ${cbs.length}؟`)) return; const c = getCourse(cid); const pids = cbs.map(cb => cb.dataset.pid); c.participants = c.participants.filter(p => !pids.includes(p.personalId)); pids.forEach(pid => { Object.keys(c.attendance).forEach(d => delete c.attendance[d][pid]); }); save(); renderNomination(); toast(`تم حذف ${pids.length}`); pids.forEach(pid => cloudDeleteParticipant(cid, pid)); }
 
@@ -1278,7 +1289,7 @@ function openTeacherForm(id) { const t = id ? DB.teachers.find(x => x.id === id)
 function saveTeacher(id) { const g = k => document.getElementById(k).value.trim(); const t = { name: g('t_name'), nationality: g('t_nat'), personalId: g('t_pid'), specialty: g('t_spec'), phone: g('t_phone'), email: g('t_email') }; if (!t.name || !t.personalId) return toast('الاسم والرقم الشخصي مطلوبان', 'error'); if (id) { Object.assign(DB.teachers.find(x => x.id === id), t); const u = DB.users.find(x => x.role === 'teacher' && x.personalId === t.personalId); if (u) { u.name = t.name; u.phone = t.phone; } } else { DB.teachers.push({ id: uid(), ...t }); } save(); closeModal(); renderTeachers(); toast('تم'); }
 function deleteTeacher(id) { if (!confirm('حذف؟')) return; DB.teachers = DB.teachers.filter(x => x.id !== id); save(); renderTeachers(); }
 function bulkDeleteTeachers() { const cbs = getSelected('tch-cb'); if (!cbs.length) return toast('لم تختر', 'error'); if (!confirm(`حذف ${cbs.length}؟`)) return; const tids = cbs.map(cb => cb.dataset.tid); DB.teachers = DB.teachers.filter(t => !tids.includes(t.id)); save(); renderTeachers(); toast(`تم حذف ${tids.length}`); }
-function createTeacherLogin(tid) { const t = DB.teachers.find(x => x.id === tid); if (!t) return; if (!t.personalId) return toast('الرقم الشخصي مطلوب', 'error'); if (DB.users.some(u => u.personalId === t.personalId)) return toast('موجود', 'error'); DB.users.push({ id: uid(), name: t.name, role: 'teacher', personalId: t.personalId, username: t.personalId, password: t.personalId, phone: t.phone, credentialsCustomized: false }); save(); renderTeachers(); toast('تم'); cloudCreateLogin(t.personalId, t.personalId, t.name, 'teacher'); }
+function createTeacherLogin(tid) { const t = DB.teachers.find(x => x.id === tid); if (!t) return; if (!t.personalId) return toast('الرقم الشخصي مطلوب', 'error'); if (DB.users.some(u => u.personalId === t.personalId)) return toast('موجود', 'error'); DB.users.push({ id: uid(), name: t.name, role: 'teacher', personalId: t.personalId, username: t.personalId, password: defaultPasswordFor(t.personalId), phone: t.phone, credentialsCustomized: false }); save(); renderTeachers(); toast('تم'); cloudCreateLogin(t.personalId, defaultPasswordFor(t.personalId), t.name, 'teacher', t.personalId); }
 
 // ============ EXAMS ============
 function renderExamsList() {
@@ -1350,15 +1361,15 @@ function renderUserManagement() {
   document.getElementById('mainContent').innerHTML = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2"><h1 class="text-2xl font-bold" style="color:#5e130e">إدارة المستخدمين (${DB.users.length})</h1><div class="flex gap-2 flex-wrap"><select class="input" style="width:auto" onchange="state.userRoleFilter=this.value; renderUserManagement()"><option value="">الكل</option>${Object.keys(ROLE_DEFS).map(r => `<option value="${r}" ${filter===r?'selected':''}>${ROLE_DEFS[r].short}</option>`).join('')}</select><button class="btn btn-primary" onclick="openUserEditForm()"><i class="fas fa-plus"></i> إضافة</button><button class="btn btn-gray" onclick="syncAccountRoles({force:true})" title="تثبيت دور كل حساب في السحابة"><i class="fas fa-rotate"></i> مزامنة الأدوار</button>${hasPerm('import_users') ? '<button class="btn btn-warn" onclick="openUserImport()"><i class="fas fa-download"></i> استيراد</button>' : ''}${hasPerm('delete_users') ? '<button class="btn btn-danger" onclick="bulkDeleteUsers()"><i class="fas fa-trash"></i> حذف المحدد</button>' : ''}</div></div><div class="flex justify-end mb-2">${colsToggleBtn('users')}</div><div class="card overflow-x-auto"><table class="resizable-table" data-table-id="users"><thead><tr><th data-col-key="select" style="width:40px"><input type="checkbox" data-select-all="true"></th><th data-col-key="name">الاسم</th><th data-col-key="role">الدور</th><th data-col-key="pid">الرقم الشخصي</th><th data-col-key="username">المستخدم</th><th data-col-key="phone">الجوال</th><th data-col-key="actions">إجراءات</th></tr></thead><tbody>${users.slice(0, 2000).map((u,i) => `<tr><td><input type="checkbox" class="user-cb" data-uid="${u.id}"></td><td class="font-semibold">${esc(u.name)}</td><td><span class="badge ${u.role==='admin'?'badge-blue':u.role==='employee'?'badge-maroon':u.role==='teacher'?'badge-yellow':'badge-green'}">${((ROLE_DEFS[u.role]||{}).short||u.role)}</span></td><td>${esc(u.personalId) || '-'}</td><td>${esc(u.username)}</td><td>${esc(u.phone) || '-'}</td><td class="whitespace-nowrap"><button class="action-btn action-edit" onclick="openUserEditForm('${u.id}')"><i class="fas fa-edit"></i></button><button class="action-btn action-view" onclick="retryActivateLogin('${u.id}')" title="تفعيل/التحقق من حساب الدخول الفعلي"><i class="fas fa-plug"></i></button>${hasPerm('reset_passwords') ? `<button class="action-btn action-key" onclick="openAdminResetPassword('${u.id}')"><i class="fas fa-key"></i></button>` : ''}${u.id !== state.user.id && hasPerm('delete_users') ? `<button class="action-btn action-delete" onclick="deleteUserConfirm('${u.id}')"><i class="fas fa-trash"></i></button>` : ''}</td></tr>`).join('') || '<tr><td colspan="7" class="text-center text-gray-400 py-6">لا يوجد</td></tr>'}${users.length > 2000 ? `<tr><td colspan="7" class="text-center text-xs text-gray-2000 py-2">عرض 2000 من ${users.length}</td></tr>` : ''}</tbody></table></div>`;
   initTableResizers();
 }
-function retryActivateLogin(uid) { const u = getUser(uid); if (!u) return; toast('جارٍ تفعيل الدخول...'); cloudCreateLogin(u.personalId || u.username, u.password || u.personalId || u.username, u.name, u.role); }
+function retryActivateLogin(uid) { const u = getUser(uid); if (!u) return; toast('جارٍ تفعيل الدخول...'); const pwd = defaultPasswordFor(u.password || u.personalId || u.username); u.password = pwd; u.loginAttempted = false; save(); Promise.resolve(cloudCreateLogin(u.username || u.personalId, pwd, u.name, u.role, u.personalId)).then(r => { u.loginCreated = !!(r && r.ok); u.loginAttempted = !(r && r.ok); if (r && r.ok) u.roleSyncFailed = undefined; save(); try { renderUserManagement(); } catch (e) {} }); }
 function openUserEditForm(id) {
   const u = id ? getUser(id) : { name: '', username: '', password: '', role: 'student', personalId: '', phone: '' };
   document.getElementById('modalRoot').innerHTML = `<div class="modal" onclick="if(event.target===this)closeModal()"><div class="modal-content p-6 max-w-lg"><h2 class="text-xl font-bold mb-4" style="color:#5e130e">${id?'تعديل':'إضافة'} مستخدم</h2><div class="space-y-2"><div><label class="text-sm font-semibold">الاسم</label><input class="input" id="u_name" value="${esc(u.name)}"></div><div><label class="text-sm font-semibold">الدور</label><select class="input" id="u_role">${Object.keys(ROLE_DEFS).map(r => `<option value="${r}" ${u.role===r?'selected':''}>${ROLE_DEFS[r].short}</option>`).join('')}</select></div><div><label class="text-sm font-semibold">الرقم الشخصي *</label><input class="input" id="u_pid" value="${esc(u.personalId)}"></div><div><label class="text-sm font-semibold">المستخدم</label><input class="input" id="u_username" value="${esc(u.username)}"></div><div><label class="text-sm font-semibold">كلمة المرور</label><input type="password" autocomplete="new-password" class="input" id="u_password" value="${esc(u.password)}"></div><div><label class="text-sm font-semibold">الجوال</label><input class="input" id="u_phone" value="${esc(u.phone||'')}"></div></div><div class="flex justify-end gap-2 mt-4"><button class="btn btn-gray" onclick="closeModal()">إلغاء</button><button class="btn btn-primary" onclick="saveUserData('${id||''}')">حفظ</button></div></div></div>`;
 }
-function saveUserData(id) { const role = document.getElementById('u_role').value; const name = document.getElementById('u_name').value.trim(); let personalId = document.getElementById('u_pid').value.trim(); let username = document.getElementById('u_username').value.trim(); let password = document.getElementById('u_password').value.trim(); const phone = document.getElementById('u_phone').value.trim(); if (!name || !personalId) return toast('مطلوب', 'error'); if (!username) username = personalId; if (!password) password = personalId; if (DB.users.some(u => u.username === username && u.id !== id)) return toast('مستخدم', 'error'); const _old = id ? Object.assign({}, getUser(id)) : null; if (id) Object.assign(getUser(id), { name, role, personalId, username, password, phone, credentialsCustomized: true, roleSynced: undefined }); else DB.users.push({ id: uid(), name, role, personalId, username, password, phone, credentialsCustomized: true }); save(); closeModal(); renderUserManagement(); toast('تم'); if (!id) cloudCreateLogin(username, password, name, role); else if (_old.role !== role || _old.password !== password || (_old.username || _old.personalId) !== username || _old.name !== name) cloudUpdateAccount({ username: _old.username || _old.personalId, password: _old.password }, { username, password, name, role }); }
+function saveUserData(id) { const role = document.getElementById('u_role').value; const name = document.getElementById('u_name').value.trim(); let personalId = document.getElementById('u_pid').value.trim(); let username = document.getElementById('u_username').value.trim(); let password = document.getElementById('u_password').value.trim(); const phone = document.getElementById('u_phone').value.trim(); if (!name || !personalId) return toast('مطلوب', 'error'); if (!username) username = personalId; if (!password) password = defaultPasswordFor(personalId); if (password.length < 6) password = padNumericPassword(password); if (password.length < 6) return toast('كلمة المرور يجب ألا تقل عن 6 أحرف', 'error'); if (DB.users.some(u => (u.username === username || (u.personalId && String(u.personalId) === personalId)) && u.id !== id)) return toast('مستخدم', 'error'); const _old = id ? Object.assign({}, getUser(id)) : null; if (id) Object.assign(getUser(id), { name, role, personalId, username, password, phone, credentialsCustomized: true, roleSynced: undefined, roleSyncFailed: undefined }); else DB.users.push({ id: uid(), name, role, personalId, username, password, phone, credentialsCustomized: true }); save(); closeModal(); renderUserManagement(); toast('تم'); if (!id) cloudCreateLogin(username, password, name, role, personalId); else if (_old.role !== role || _old.password !== password || (_old.username || _old.personalId) !== username || _old.name !== name || String(_old.personalId) !== personalId) cloudUpdateAccount({ username: _old.username || _old.personalId, password: _old.password, personalId: _old.personalId }, { username, password, name, role, personalId }); }
 function deleteUserConfirm(id) { const u = getUser(id); if (!u) return; if (!confirm(`حذف "${u.name}"؟`)) return; DB.users = DB.users.filter(x => x.id !== id); save(); renderUserManagement(); }
 function openAdminResetPassword(uid) { const u = getUser(uid); if (!u) return; document.getElementById('modalRoot').innerHTML = `<div class="modal" onclick="if(event.target===this)closeModal()"><div class="modal-content p-6 max-w-md"><h2 class="text-xl font-bold mb-3" style="color:#5e130e">إعادة تعيين</h2><p class="text-sm mb-3">للمستخدم: <strong>${esc(u.name)}</strong></p><div class="mb-3"><label class="text-sm font-semibold">كلمة المرور الجديدة</label><input type="password" autocomplete="new-password" class="input" id="rst_pwd" placeholder="اتركها فارغة = الرقم"></div><div class="flex justify-end gap-2"><button class="btn btn-gray" onclick="closeModal()">إلغاء</button><button class="btn btn-primary" onclick="doResetPassword('${uid}')">تعيين</button></div></div></div>`; }
-function doResetPassword(uid) { const u = getUser(uid); if (!u) return; let pwd = document.getElementById('rst_pwd').value.trim(); if (!pwd) pwd = u.personalId || u.username; const _oldPwd = u.password; u.password = pwd; u.credentialsCustomized = true; save(); closeModal(); renderUserManagement(); toast(`كلمة المرور: ${pwd}`); cloudUpdateAccount({ username: u.username || u.personalId, password: _oldPwd }, { username: u.username || u.personalId, password: pwd, name: u.name, role: u.role }); }
+function doResetPassword(uid) { const u = getUser(uid); if (!u) return; let pwd = document.getElementById('rst_pwd').value.trim(); if (!pwd) pwd = defaultPasswordFor(u.personalId || u.username); if (pwd.length < 6) pwd = padNumericPassword(pwd); if (pwd.length < 6) return toast('كلمة المرور يجب ألا تقل عن 6 أحرف', 'error'); const _oldPwd = u.password; u.password = pwd; u.credentialsCustomized = true; u.loginAttempted = false; u.roleSyncFailed = undefined; save(); closeModal(); renderUserManagement(); toast(`كلمة المرور: ${pwd}`); cloudUpdateAccount({ username: u.username || u.personalId, password: _oldPwd, personalId: u.personalId }, { username: u.username || u.personalId, password: pwd, name: u.name, role: u.role, personalId: u.personalId }); }
 
 // ============ CHANGE PASSWORD ============
 function renderChangePassword() {
@@ -1750,15 +1761,16 @@ function findRegistered(pid){
  if(!f)DB.courses.some(c=>c.participants.some(x=>String(x.personalId)===pid&&(f=x)));
  return f?{name:f.name,role:'student',phone:f.phone}:null;}
 function findLoginUser(u,p){
- const ex=DB.users.find(x=>(x.username===u||(x.personalId&&String(x.personalId)===u))&&x.password===p);if(ex)return ex;
- if(!/^\d{5,}$/.test(u)||p!==u||DB.users.some(x=>String(x.personalId)===u||x.username===u))return null;
+ const padded=defaultPasswordFor(p);
+ const ex=DB.users.find(x=>(x.username===u||(x.personalId&&String(x.personalId)===u))&&(x.password===p||x.password===padded));if(ex)return ex;
+ if(!/^\d{4,}$/.test(u)||p!==u||DB.users.some(x=>String(x.personalId)===u||x.username===u))return null;
  const r=findRegistered(u);if(!r||!r.name)return null;
- const user={id:uid(),name:r.name,role:r.role,personalId:u,username:u,password:u,phone:r.phone||'',credentialsCustomized:false};DB.users.push(user);save();return user;}
+ const user={id:uid(),name:r.name,role:r.role,personalId:u,username:u,password:defaultPasswordFor(u),phone:r.phone||'',credentialsCustomized:false};DB.users.push(user);save();return user;}
 function openUserImport(){const cur=state.userRoleFilter||'student';
- openUnifiedImport({title:'استيراد مستخدمين',extra:`<div class="mb-3 p-3 rounded" style="background:#fbe9e7"><label class="block text-sm font-semibold mb-1">الدور الممنوح للمستورَدين</label><select id="imp_role" class="input">${Object.keys(ROLE_DEFS).map(v=>[v,ROLE_DEFS[v].label]).map(([v,t])=>`<option value="${v}" ${v===cur?'selected':''}>${t}</option>`).join('')}</select><p class="text-xs text-gray-600 mt-1">اسم المستخدم وكلمة المرور الأولية = الرقم الشخصي، ويستطيع كل مستخدم تغييرها بعد الدخول.</p></div>`,
+ openUnifiedImport({title:'استيراد مستخدمين',extra:`<div class="mb-3 p-3 rounded" style="background:#fbe9e7"><label class="block text-sm font-semibold mb-1">الدور الممنوح للمستورَدين</label><select id="imp_role" class="input">${Object.keys(ROLE_DEFS).map(v=>[v,ROLE_DEFS[v].label]).map(([v,t])=>`<option value="${v}" ${v===cur?'selected':''}>${t}</option>`).join('')}</select><p class="text-xs text-gray-600 mt-1">اسم المستخدم وكلمة المرور الأولية = الرقم الشخصي (الأرقام الأقل من 6 تُكمَّل بأصفار بادئة)، ويستطيع كل مستخدم تغييرها بعد الدخول.</p></div>`,
  onImport:items=>{const role=document.getElementById('imp_role')?.value||'student';let add=0,skip=0;
   items.forEach(p=>{const pid=String(p.personalId||'').trim(),name=String(p.name||'').trim();if(!pid||!name||DB.users.some(u=>String(u.personalId)===pid||u.username===pid)){skip++;return;}
-   DB.users.push({id:uid(),name,role,personalId:pid,username:pid,password:pid,phone:p.phone||'',credentialsCustomized:false});add++;cloudCreateLogin(pid,pid,name,role);
+   DB.users.push({id:uid(),name,role,personalId:pid,username:pid,password:defaultPasswordFor(pid),phone:p.phone||'',credentialsCustomized:false});add++;cloudCreateLogin(pid,defaultPasswordFor(pid),name,role,pid);
    if(role==='teacher'&&!DB.teachers.some(t=>t.name===name))DB.teachers.push({id:uid(),name,specialty:'',phone:p.phone||'',email:''});});
   save();renderUserManagement();toast(`تم استيراد ${add} مستخدم`+(skip?` — تم تخطي ${skip} (مسجل مسبقاً أو بيانات ناقصة)`:''));}});}
 
@@ -1915,10 +1927,15 @@ async function cloudFetchAll(table) {
   return { data: all, error: null };
 }
 const isDemoCourse = c => /^c[123]$/.test(c.id) && c.teacherId === 'u3';
+// يميّز خطأ «لا يوجد قيد فريد» عن بقية أخطاء Supabase (نستخدمه للرجوع الآمن إلى delete+insert فقط عند الحاجة)
+function isMissingUniqueError(error) {
+  const m = String((error && (error.message || error.details || error.hint)) || '');
+  return /42P10|no unique|there is no unique|on conflict|conflict target|unique or exclusion constraint/i.test(m);
+}
 async function loadCoursesFromCloud() {
   try {
     const [c1, p1, a1] = await Promise.all([cloudFetchAll('courses'), cloudFetchAll('participants'), cloudFetchAll('attendance')]);
-    if (c1.error) { console.error('خطأ في جلب الدورات:', c1.error); toast('تعذّر جلب الدورات من السحابة، تم عرض البيانات المحفوظة على الجهاز', 'error'); return; }
+    if (c1.error) { console.error('خطأ في جلب الدورات:', c1.error); toast('تعذّر جلب الدورات من السحابة، تم عرض البيانات المحفوظة على الجهاز', 'error'); return { ok: false, count: 0 }; }
     if (p1.error || a1.error) console.error('خطأ في جلب المشاركين/التحضير:', p1.error || a1.error);
     const participantsData = p1.error ? null : p1.data, attendanceData = a1.error ? null : a1.data;
     const tbC = new Set((DB.tombstones && DB.tombstones.courses) || []), tbP = new Set((DB.tombstones && DB.tombstones.participants) || []);
@@ -1950,7 +1967,25 @@ async function loadCoursesFromCloud() {
       (lc.participants || []).forEach(p => pushP.push([lc.id, p]));
       Object.entries(lc.attendance || {}).forEach(([d, m]) => Object.entries(m || {}).forEach(([pid, st]) => { if (st) pushA.push([lc.id, d, pid, st]); }));
     });
-    DB.courses = merged; save();
+    DB.courses = merged; migrateUsers(); save();
+    // تأكد من وجود حساب دخول سحابي للمشاركين في الدورات المحمّلة (معالجة تدريجية 25 حساباً لكل مزامنة)
+    try {
+      const participantIds = new Set();
+      merged.forEach(c => (c.participants || []).forEach(p => { const pid = String(p.personalId || '').trim(); if (pid) participantIds.add(pid); }));
+      const pending = (DB.users || []).filter(u => u.role === 'student' && participantIds.has(String(u.personalId || '')) && !u.loginCreated && !u.loginAttempted).slice(0, 25);
+      if (pending.length) {
+        (async () => {
+          let okN = 0;
+          for (const u of pending) {
+            const r = await cloudCreateLogin(u.username || u.personalId, defaultPasswordFor(u.password || u.personalId), u.name, 'student', u.personalId);
+            if (r && r.ok) { u.loginCreated = true; u.loginAttempted = false; okN++; }
+            else u.loginAttempted = true;
+          }
+          save();
+          if (okN) toast('تم تفعيل دخول ' + okN + ' مشارك', 'success');
+        })().catch(e => console.error('ensureParticipantLogins', e));
+      }
+    } catch (e) { console.error('ensureParticipantLogins', e); }
     // إعادة محاولة حذف ما حُذف محلياً ولم يُحذف من السحابة بعد، وتنظيف العلامات المؤكَّدة
     const goneC = [...tbC].filter(id => c1.data.some(c => c.id === id));
     if (goneC.length) cloudDeleteCourses(goneC);
@@ -1969,7 +2004,21 @@ async function loadCoursesFromCloud() {
         toast('تمت مزامنة بيانات محفوظة على هذا الجهاز مع السحابة', 'success');
       })();
     }
-  } catch (e) { console.error('خطأ في جلب البيانات:', e); toast('تعذّر الاتصال بالسحابة، تم عرض البيانات المحفوظة على الجهاز', 'error'); }
+    return { ok: true, count: merged.length };
+  } catch (e) { console.error('خطأ في جلب البيانات:', e); toast('تعذّر الاتصال بالسحابة، تم عرض البيانات المحفوظة على الجهاز', 'error'); return { ok: false, count: 0 }; }
+}
+// زر «مزامنة البيانات»: يجلب أحدث نسخة من السحابة ويعرض النتيجة
+let _syncingData = false;
+async function syncNow() {
+  if (_syncingData) return toast('المزامنة قيد التنفيذ بالفعل...');
+  _syncingData = true;
+  try {
+    const res = await loadCoursesFromCloud();
+    try { renderView(); } catch (e) {}
+    if (res && res.ok) toast('تمت مزامنة البيانات مع السحابة — ' + res.count + ' دورة', 'success');
+    else toast('تعذّرت مزامنة البيانات، تحقق من الاتصال بالإنترنت', 'error');
+  } catch (e) { console.error('syncNow', e); toast('تعذّرت مزامنة البيانات', 'error'); }
+  finally { _syncingData = false; }
 }
 
 // ===== كتابة التعديلات إلى السحابة فعلياً (حل مشكلة عودة المحذوفات بعد التحديث) =====
@@ -1994,9 +2043,14 @@ async function cloudDeleteCourses(ids) {
   } catch (e) { console.error('cloudDeleteCourses', e); return false; }
 }
 async function cloudSaveParticipant(courseId, p) {
+  const row = { course_id: courseId, name: p.name, nationality: p.nationality || null, personal_id: p.personalId, employee_number: p.employeeNumber || null, phone: p.phone || null };
   try {
-    await supabaseClient.from('participants').delete().eq('course_id', courseId).eq('personal_id', p.personalId);
-    const { error } = await supabaseClient.from('participants').insert({ course_id: courseId, name: p.name, nationality: p.nationality || null, personal_id: p.personalId, employee_number: p.employeeNumber || null, phone: p.phone || null });
+    let { error } = await supabaseClient.from('participants').upsert(row, { onConflict: 'course_id,personal_id' });
+    if (error && isMissingUniqueError(error)) {
+      console.warn('participants upsert غير مدعوم — نفّذ فهرس SQL الفريد. التفاصيل:', error.message);
+      await supabaseClient.from('participants').delete().eq('course_id', courseId).eq('personal_id', p.personalId);
+      ({ error } = await supabaseClient.from('participants').insert(row));
+    }
     if (error) { console.error('cloudSaveParticipant', error); toast('تنبيه: لم يُحفظ المشارك على السحابة (' + error.message + ')', 'error'); }
   } catch (e) { console.error('cloudSaveParticipant', e); }
 }
@@ -2013,20 +2067,36 @@ async function cloudDeleteParticipant(courseId, personalId) {
 }
 async function cloudSaveAttendance(courseId, date, personalId, status) {
   try {
-    await supabaseClient.from('attendance').delete().eq('course_id', courseId).eq('date', date).eq('participant_id', personalId);
-    if (status) { const { error } = await supabaseClient.from('attendance').insert({ course_id: courseId, date, participant_id: personalId, status }); if (error) console.error('cloudSaveAttendance', error); }
+    if (!status) {
+      const { error } = await supabaseClient.from('attendance').delete().eq('course_id', courseId).eq('date', date).eq('participant_id', personalId);
+      if (error) console.error('cloudSaveAttendance', error);
+      return;
+    }
+    const row = { course_id: courseId, date, participant_id: personalId, status };
+    let { error } = await supabaseClient.from('attendance').upsert(row, { onConflict: 'course_id,date,participant_id' });
+    if (error && isMissingUniqueError(error)) {
+      console.warn('attendance upsert غير مدعوم — نفّذ فهرس SQL الفريد. التفاصيل:', error.message);
+      await supabaseClient.from('attendance').delete().eq('course_id', courseId).eq('date', date).eq('participant_id', personalId);
+      ({ error } = await supabaseClient.from('attendance').insert(row));
+    }
+    if (error) console.error('cloudSaveAttendance', error);
   } catch (e) { console.error('cloudSaveAttendance', e); }
 }
 // إنشاء حساب دخول فعلي (Supabase Auth) بالرقم الشخصي ككلمة مرور مبدئية — لا يؤثر على الجلسة الحالية
 // ينشئ حساب دخول حقيقي على Supabase، ويصحح دوره في profiles سواء كان جديداً أو موجوداً مسبقاً.
 // يستخدم طلبات REST مباشرة (fetch) بلا أي عميل Supabase إضافي، فلا يمس جلسة المدير الحالية إطلاقاً.
-async function cloudCreateLogin(personalId, password, name, role) {
-  if (!personalId || !password) return { ok: false, reason: 'missing' };
+async function cloudCreateLogin(loginId, password, name, role, personalId) {
+  if (!loginId || !password) return { ok: false, reason: 'missing' };
   role = ROLE_DEFS[role] ? role : 'student';
-  const email = personalId + '@idai.local';
-  const H = { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY };
-  const meta = { role, full_name: name || '' };
+  loginId = String(loginId).trim();
+  personalId = String(personalId || loginId).trim();
+  const rawPassword = String(password).trim();
+  password = defaultPasswordFor(rawPassword);
   const say = (m, ty) => { if (!window.__quietLogin) toast(m, ty); };
+  if (!password || password.length < 6) { say('كلمة مرور "' + (name || loginId) + '" يجب ألا تقل عن 6 أحرف', 'error'); return { ok: false, reason: 'short' }; }
+  const email = loginId + '@idai.local';
+  const H = { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY };
+  const meta = { role, full_name: name || '', personal_id: personalId };
   let userId = null, token = null, exists = false;
   try {
     const sr = await fetch(SUPABASE_URL + '/auth/v1/signup', { method: 'POST', headers: { ...H, 'Authorization': 'Bearer ' + SUPABASE_KEY }, body: JSON.stringify({ email, password, data: meta }) });
@@ -2041,9 +2111,15 @@ async function cloudCreateLogin(personalId, password, name, role) {
       else { console.error('cloudCreateLogin signup', sd); say('تم الحفظ، لكن تعذّر تفعيل الدخول (' + (name || '') + '): ' + (sd.msg || sd.error_description || 'خطأ غير معروف'), 'error'); return { ok: false, reason: 'signup' }; }
     }
     if (exists) {
-      const tr = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', { method: 'POST', headers: { ...H, 'Authorization': 'Bearer ' + SUPABASE_KEY }, body: JSON.stringify({ email, password }) });
-      const td = await tr.json().catch(() => ({}));
-      if (!tr.ok) { say('حساب "' + (name || personalId) + '" موجود مسبقاً لكن كلمة المرور على السحابة مختلفة، أعد تعيينها من «إدارة المستخدمين»', 'error'); return { ok: false, reason: 'password' }; }
+      // جرّب كلمة المرور المكمّلة ثم الأصلية (لحسابات أُنشئت قبل إصلاح الأرقام القصيرة)
+      const candidates = [...new Set([password, rawPassword].filter(Boolean))];
+      let td = null, okPwd = false;
+      for (const pwd of candidates) {
+        const tr = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', { method: 'POST', headers: { ...H, 'Authorization': 'Bearer ' + SUPABASE_KEY }, body: JSON.stringify({ email, password: pwd }) });
+        const d = await tr.json().catch(() => ({}));
+        if (tr.ok && d && d.access_token) { td = d; okPwd = true; password = pwd; break; }
+      }
+      if (!okPwd) { say('حساب "' + (name || loginId) + '" موجود مسبقاً لكن كلمة المرور على السحابة مختلفة، أعد تعيينها من «إدارة المستخدمين»', 'error'); return { ok: false, reason: 'password' }; }
       userId = (td.user && td.user.id) || null; token = td.access_token || null;
       // حساب قائم: ثبّت الدور في بيانات الحساب
       if (token) { try { const ur = await fetch(SUPABASE_URL + '/auth/v1/user', { method: 'PUT', headers: { ...H, 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ data: meta }) }); if (!ur.ok) { console.error('cloudCreateLogin meta', await ur.text()); return { ok: false, reason: 'meta' }; } } catch (e) { return { ok: false, reason: 'meta' }; } }
@@ -2053,32 +2129,47 @@ async function cloudCreateLogin(personalId, password, name, role) {
       // الدور محفوظ في بيانات الحساب؛ نحدّث profiles أيضاً (قد تمنعه سياسات الأمان وهذا لا يؤثر)
       try { await fetch(SUPABASE_URL + '/rest/v1/profiles', { method: 'POST', headers: { ...H, 'Authorization': 'Bearer ' + token, 'Prefer': 'resolution=merge-duplicates' }, body: JSON.stringify({ id: userId, full_name: name || '', role }) }); } catch (e) {}
       try { await fetch(SUPABASE_URL + '/rest/v1/profiles?id=eq.' + userId, { method: 'PATCH', headers: { ...H, 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ role, full_name: name || '' }) }); } catch (e) {}
-      say((exists ? 'تم تحديث' : 'تم تفعيل') + ' حساب "' + (name || personalId) + '" بنجاح (الدور: ' + ROLE_DEFS[role].short + ')', 'success');
+      say((exists ? 'تم تحديث' : 'تم تفعيل') + ' حساب "' + (name || loginId) + '" بنجاح (الدور: ' + ROLE_DEFS[role].short + ')', 'success');
     } else {
-      say('تنبيه: حساب "' + (name || personalId) + '" يحتاج تعطيل خاصية "Confirm email" من Supabase وإلا لن يستطيع الدخول', 'error');
+      say('تنبيه: حساب "' + (name || loginId) + '" يحتاج تعطيل خاصية "Confirm email" من Supabase وإلا لن يستطيع الدخول', 'error');
     }
     return { ok: true };
-  } catch (e) { console.error('cloudCreateLogin', e); say('تعذّر الاتصال بالخادم لتفعيل حساب "' + (name || personalId) + '"', 'error'); return { ok: false, reason: 'network' }; }
+  } catch (e) { console.error('cloudCreateLogin', e); say('تعذّر الاتصال بالخادم لتفعيل حساب "' + (name || loginId) + '"', 'error'); return { ok: false, reason: 'network' }; }
 }
 // تحديث حساب قائم (تغيير الدور أو كلمة المرور أو اسم المستخدم)
 async function cloudUpdateAccountBase(old, nw) {
-  if (old.username !== nw.username) return _createLoginBase(nw.username, nw.password, nw.name, nw.role);
-  if (old.password !== nw.password) {
+  const oldLogin = String(old.username || old.personalId || '').trim();
+  const newLogin = String(nw.username || nw.personalId || '').trim();
+  const newPersonalId = String(nw.personalId || newLogin).trim();
+  let newPassword = String(nw.password || newPersonalId).trim();
+  if (newPassword.length < 6) newPassword = padNumericPassword(newPassword);
+  if (newPassword.length < 6) { toast('كلمة المرور يجب ألا تقل عن 6 أحرف', 'error'); return { ok: false, reason: 'short' }; }
+  if (newLogin !== oldLogin) return _createLoginBase(newLogin, newPassword, nw.name, nw.role, newPersonalId);
+  const oldPassword = String(old.password || old.personalId || '').trim();
+  if (oldPassword !== newPassword) {
     const H = { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY };
     try {
-      const tr = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', { method: 'POST', headers: { ...H, 'Authorization': 'Bearer ' + SUPABASE_KEY }, body: JSON.stringify({ email: old.username + '@idai.local', password: old.password }) });
-      const td = await tr.json().catch(() => ({}));
-      if (tr.ok && td.access_token) {
-        const ur = await fetch(SUPABASE_URL + '/auth/v1/user', { method: 'PUT', headers: { ...H, 'Authorization': 'Bearer ' + td.access_token }, body: JSON.stringify({ password: nw.password, data: { role: ROLE_DEFS[nw.role] ? nw.role : 'student', full_name: nw.name || '' } }) });
+      // جرّب كلمة المرور القديمة كما هي ثم المكمّلة بالأصفار
+      const candidates = [...new Set([oldPassword, defaultPasswordFor(oldPassword)].filter(Boolean))];
+      let td = null;
+      for (const pwd of candidates) {
+        const tr = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', { method: 'POST', headers: { ...H, 'Authorization': 'Bearer ' + SUPABASE_KEY }, body: JSON.stringify({ email: oldLogin + '@idai.local', password: pwd }) });
+        const d = await tr.json().catch(() => ({}));
+        if (tr.ok && d && d.access_token) { td = d; break; }
+      }
+      if (td && td.access_token) {
+        const ur = await fetch(SUPABASE_URL + '/auth/v1/user', { method: 'PUT', headers: { ...H, 'Authorization': 'Bearer ' + td.access_token }, body: JSON.stringify({ password: newPassword, data: { role: ROLE_DEFS[nw.role] ? nw.role : 'student', full_name: nw.name || '', personal_id: newPersonalId } }) });
         if (ur.ok) {
           try { await fetch(SUPABASE_URL + '/rest/v1/profiles?id=eq.' + (td.user && td.user.id), { method: 'PATCH', headers: { ...H, 'Authorization': 'Bearer ' + td.access_token }, body: JSON.stringify({ role: nw.role, full_name: nw.name || '' }) }); } catch (e) {}
           toast('تم تحديث كلمة المرور والدور على السحابة'); return { ok: true };
         }
         const ed = await ur.json().catch(() => ({})); toast('تعذّر تحديث كلمة المرور على السحابة: ' + (ed.msg || ed.message || ''), 'error'); return { ok: false };
       }
+      // لم تُطابق القديمة على السحابة: ثبّت الحساب بالكلمة الجديدة
+      return _createLoginBase(newLogin, newPassword, nw.name, nw.role, newPersonalId);
     } catch (e) { console.error(e); }
   }
-  return _createLoginBase(nw.username, nw.password, nw.name, nw.role);
+  return _createLoginBase(newLogin, newPassword, nw.name, nw.role, newPersonalId);
 }
 
 // ===== كتابة مجمّعة للسحابة (تمنع فقدان البيانات عند الاستيراد الكبير) =====
@@ -2097,8 +2188,13 @@ async function flushParticipants() {
     for (let i = 0; i < list.length; i += 200) {
       const chunk = list.slice(i, i + 200);
       try {
-        await supabaseClient.from('participants').delete().eq('course_id', cid).in('personal_id', chunk.map(p => p.personalId));
-        const { error } = await supabaseClient.from('participants').insert(chunk.map(p => ({ course_id: cid, name: p.name, nationality: p.nationality || null, personal_id: p.personalId, employee_number: p.employeeNumber || null, phone: p.phone || null })));
+        const rows = chunk.map(p => ({ course_id: cid, name: p.name, nationality: p.nationality || null, personal_id: p.personalId, employee_number: p.employeeNumber || null, phone: p.phone || null }));
+        let { error } = await supabaseClient.from('participants').upsert(rows, { onConflict: 'course_id,personal_id' });
+        if (error && isMissingUniqueError(error)) {
+          console.warn('participants upsert غير مدعوم — نفّذ فهرس SQL الفريد. التفاصيل:', error.message);
+          await supabaseClient.from('participants').delete().eq('course_id', cid).in('personal_id', chunk.map(p => p.personalId));
+          ({ error } = await supabaseClient.from('participants').insert(rows));
+        }
         if (error) { failed += chunk.length; console.error('flushParticipants', error); toast('تنبيه: لم يُحفظ المشاركون على السحابة (' + error.message + ')', 'error'); }
       } catch (e) { failed += chunk.length; console.error('flushParticipants', e); }
     }
@@ -2119,9 +2215,17 @@ async function flushAttendance() {
     for (let i = 0; i < list.length; i += 200) {
       const chunk = list.slice(i, i + 200);
       try {
-        await supabaseClient.from('attendance').delete().eq('course_id', cid).eq('date', date).in('participant_id', chunk.map(x => x.personalId));
         const rows = chunk.filter(x => x.status).map(x => ({ course_id: cid, date, participant_id: x.personalId, status: x.status }));
-        if (rows.length) { const { error } = await supabaseClient.from('attendance').insert(rows); if (error) { console.error('flushAttendance', error); toast('تنبيه: لم يُحفظ التحضير على السحابة (' + error.message + ')', 'error'); } }
+        let error = null;
+        if (rows.length) {
+          ({ error } = await supabaseClient.from('attendance').upsert(rows, { onConflict: 'course_id,date,participant_id' }));
+          if (error && isMissingUniqueError(error)) {
+            console.warn('attendance upsert غير مدعوم — نفّذ فهرس SQL الفريد. التفاصيل:', error.message);
+            await supabaseClient.from('attendance').delete().eq('course_id', cid).eq('date', date).in('participant_id', chunk.map(x => x.personalId));
+            ({ error } = await supabaseClient.from('attendance').insert(rows));
+          }
+        }
+        if (error) { console.error('flushAttendance', error); toast('تنبيه: لم يُحفظ التحضير على السحابة (' + error.message + ')', 'error'); }
       } catch (e) { console.error('flushAttendance', e); }
     }
   }
@@ -2138,18 +2242,23 @@ function cloudUpdateAccount(old, nw) { return cloudQueue(() => cloudUpdateAccoun
 // مزامنة أدوار الحسابات القائمة مع السحابة (تعالج الحسابات التي أُنشئت قبل تثبيت الدور)
 async function syncAccountRoles(opts = {}) {
   if (!state.user || state.user.role !== 'admin' || window.__syncing) return;
-  const list = DB.users.filter(u => u.role !== 'admin' && ROLE_DEFS[u.role] && (u.username || u.personalId) && (opts.force || u.roleSynced !== u.role) && (!opts.auto || u.role !== 'student'));
+  // في المزامنة التلقائية: نتجاهل الحسابات التي فشلت سابقاً حتى لا تتكرر الرسالة مع كل دخول
+  const list = DB.users.filter(u => u.role !== 'admin' && ROLE_DEFS[u.role] && (u.username || u.personalId) && (opts.force || u.roleSynced !== u.role) && (!opts.auto || (u.role !== 'student' && u.roleSyncFailed !== u.role)));
   if (!list.length) { if (!opts.auto) toast('جميع الأدوار متزامنة مع السحابة'); return; }
   window.__syncing = true; window.__quietLogin = true;
   if (!opts.auto) toast('جارٍ مزامنة أدوار ' + list.length + ' حساب...');
   let ok = 0; const bad = [];
   for (const u of list) {
-    const r = await cloudQueue(() => _createLoginBase(u.username || u.personalId, u.password || u.personalId, u.name, u.role));
-    if (r && r.ok) { u.roleSynced = u.role; ok++; } else bad.push(u.name);
+    const pwd = defaultPasswordFor(u.password || u.personalId || u.username);
+    const r = await cloudQueue(() => _createLoginBase(u.username || u.personalId, pwd, u.name, u.role, u.personalId));
+    if (r && r.ok) { u.roleSynced = u.role; u.roleSyncFailed = undefined; if (pwd) u.password = pwd; ok++; }
+    else { u.roleSyncFailed = u.role; bad.push(u.name); }
   }
   window.__syncing = false; window.__quietLogin = false; save();
-  if (bad.length) console.warn('تعذّرت مزامنة:', bad);
-  toast('مزامنة الأدوار: نجح ' + ok + (bad.length ? ' — تعذّر ' + bad.length + ' (كلمة مرورهم على السحابة تختلف عن المحفوظة هنا، أعد تعيينها ثم أعد المزامنة)' : ''), bad.length ? 'error' : 'success');
+  if (bad.length) console.warn('تعذّرت مزامنة الأدوار لهذه الحسابات (كلمة المرور على السحابة تختلف):', bad);
+  // المزامنة التلقائية لا تُزعج المدير برسائل خطأ؛ التفاصيل تظهر عند الضغط على زر «مزامنة الأدوار»
+  if (opts.auto) { if (ok) toast('تم تثبيت أدوار ' + ok + ' حساب في السحابة', 'success'); return; }
+  toast('مزامنة الأدوار: نجح ' + ok + (bad.length ? ' — تعذّر ' + bad.length + ' (كلمة مرورهم على السحابة تختلف عن المحفوظة هنا، أعد تعيينها من إدارة المستخدمين ثم أعد المزامنة)' : ''), bad.length ? 'error' : 'success');
 }
 
 // ===== الجلسة وتسجيل الدخول =====
@@ -2187,8 +2296,10 @@ async function enterApp(authUser, restoring) {
   try { const r = await supabaseClient.from('profiles').select('*').eq('id', authUser.id).maybeSingle(); profile = r.data; } catch (e) {}
   // الدور: المدير من جدول profiles فقط، وغيره من بيانات الحساب (التي يحددها المدير عند الإنشاء) ثم profiles
   const meta = authUser.user_metadata || {};
+  const localMatch = (DB.users || []).find(u => u.username === loginId || String(u.personalId) === loginId);
+  const personalId = String(meta.personal_id || localMatch?.personalId || loginId);
   const roleKey = await resolveRole(authUser, profile, loginId);
-  state.user = { id: authUser.id, name: profile?.full_name || meta.full_name || loginId, role: ROLE_DEFS[roleKey].base, roleKey, email: authUser.email, personalId: loginId, username: loginId };
+  state.user = { id: authUser.id, name: profile?.full_name || meta.full_name || loginId, role: ROLE_DEFS[roleKey].base, roleKey, email: authUser.email, personalId, username: loginId };
 
   document.getElementById('loginView').classList.add('hidden');
   document.getElementById('appView').classList.remove('hidden');
@@ -2217,13 +2328,22 @@ async function handleLogin(e) {
   if (!inputId || !password) return toast('أدخل اسم المستخدم وكلمة المرور', 'error');
   const email = inputId.includes('@') ? inputId : inputId + '@idai.local';
   const btn = e.target.querySelector('button[type="submit"]'); if (btn) btn.disabled = true;
+  // الأرقام الشخصية الأقل من 6 خانات تُكمَّل بأصفار بادئة (5454 ← 005454)
+  const padded = /^\d{1,5}$/.test(password) ? defaultPasswordFor(password) : password;
+  const candidates = [...new Set([password, padded].filter(Boolean))];
   try {
-    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    let data = null, error = null;
+    for (const pwd of candidates) {
+      const r = await supabaseClient.auth.signInWithPassword({ email, password: pwd });
+      if (!r.error) { data = r.data; error = null; break; }
+      error = r.error;
+      if (!(r.error.message || '').toLowerCase().includes('invalid login credentials')) break;
+    }
     if (error) {
       console.error('login error', error);
       const msg = (error.message || '').toLowerCase();
       if (msg.includes('email not confirmed')) toast('الحساب أُنشئ لكنه بانتظار تأكيد البريد — يجب تعطيل "Confirm email" من إعدادات Supabase حتى يعمل الدخول بالرقم الشخصي', 'error');
-      else if (msg.includes('invalid login credentials')) toast('الرقم الشخصي أو كلمة المرور غير صحيحة', 'error');
+      else if (msg.includes('invalid login credentials')) toast('الرقم الشخصي أو كلمة المرور غير صحيحة. إن كان رقمك أقل من 6 خانات فكلمة المرور الأولية تُكمَّل بأصفار بادئة (مثال: 5454 ← 005454)', 'error');
       else toast('تعذّر الدخول: ' + error.message, 'error');
       return;
     }
