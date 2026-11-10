@@ -344,6 +344,8 @@ let DB = { users: [], courses: [], exams: [], messages: [], surveyTemplates: {},
 let state = { user: null, view: 'login', courseId: null, tab: 'overview', planYear: new Date().getFullYear(), attendanceCourseId: null, attendanceDate: null, nominationCourseId: null, reportCourseId: null, search: { name: '', pid: '', phone: '', empno: '' }, certDesignType: 'completion', selectedCertEl: null, catPage: 'إمام قطري', absencesCourseId: null, userRoleFilter: '', examYear: new Date().getFullYear(), surveyTab: 'templates', surveyCourseId: null, roleTab: 'admin', studentTab: 'current', reportTab: 'course', integratedReportType: 'course', integratedCourseId: null, integratedFilter: 'all', empSearch: '', catSearch: '', dashFilter: null };
 
 function courseCmp(a, b) { const sa = a.startDate || '', sb = b.startDate || ''; if (sa !== sb) return sa < sb ? 1 : -1; return String(a.name || '').localeCompare(String(b.name || ''), 'ar'); }
+// ترتيب صفحات الخطة التدريبية: تصاعدي من يناير (1) إلى ديسمبر (12)
+function courseCmpAsc(a, b) { const sa = a.startDate || '9999-99-99', sb = b.startDate || '9999-99-99'; if (sa !== sb) return sa < sb ? -1 : 1; return String(a.name || '').localeCompare(String(b.name || ''), 'ar'); }
 function sortCourses() { try { const a = DB.courses; for (let i = 1; i < a.length; i++) { if (courseCmp(a[i - 1], a[i]) > 0) { a.sort(courseCmp); break; } } } catch (e) {} }
 function modalBackdrop(ev, el) { if (ev.target !== el) return; if (el.querySelector('input,textarea,select')) return; closeModal(); }
 function save() { sortCourses(); try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch (e) { toast('تعذّر الحفظ: مساحة التخزين ممتلئة', 'error'); } }
@@ -822,7 +824,7 @@ function renderDashboard() {
   const r = state.user.role;
   if (r === 'admin' || r === 'employee') {
     const currentYear = state.dashYear || new Date().getFullYear();
-    const yc = DB.courses.filter(c => c.year === currentYear).sort(courseCmp);
+    const yc = DB.courses.filter(c => c.year === currentYear).sort(courseCmpAsc);
     const allCourses = DB.courses;
     const totalParticipants = DB.courses.reduce((s,c) => s + c.participants.length, 0);
     const totalExams = DB.exams.length;
@@ -1009,7 +1011,7 @@ function saveEmployeePermissions(uid) { const perms = {}; document.querySelector
 // ============ PLAN v16 - with copy to 2020-2050 + Select All ============
 function renderPlan() {
   const y = state.planYear;
-  const courses = DB.courses.filter(c => c.year === y).sort(courseCmp);
+  const courses = DB.courses.filter(c => c.year === y).sort(courseCmpAsc);
   const years = allPlanYears();
   document.getElementById('mainContent').innerHTML = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2">
       <h1 class="text-2xl font-bold" style="color:#5e130e">الخطة التدريبية — ${y}</h1>
