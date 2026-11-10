@@ -336,7 +336,7 @@ const ARABIC_FONTS = ['Cairo','Tajawal','Amiri','Reem Kufi','Almarai','El Messir
 let DB = { users: [], courses: [], exams: [], messages: [], surveyTemplates: {}, surveyResponses: [], certDesigns: {}, teachers: [], categories: {}, permissions: {}, rolePerms: {}, colWidths: {}, hiddenColumns: {}, hrEmployees: [] };
 let state = { user: null, view: 'login', courseId: null, tab: 'overview', planYear: new Date().getFullYear(), attendanceCourseId: null, attendanceDate: null, nominationCourseId: null, reportCourseId: null, search: { name: '', pid: '', phone: '', empno: '' }, certDesignType: 'completion', selectedCertEl: null, catPage: 'إمام قطري', absencesCourseId: null, userRoleFilter: '', examYear: new Date().getFullYear(), surveyTab: 'templates', surveyCourseId: null, roleTab: 'admin', studentTab: 'current', reportTab: 'course', integratedReportType: 'course', integratedCourseId: null, integratedFilter: 'all', empSearch: '', catSearch: '', dashFilter: null };
 
-function save() { try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch (e) { toast('تعذّر الحفظ: مساحة التخزين ممتلئة', 'error'); } }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch (e) { toast('تعذّر الحفظ: مساحة التخزين ممتلئة', 'error'); } try { if (typeof cloudMarkDirty === 'function') cloudMarkDirty(); } catch (e) {} }
 function load() {
   const s = localStorage.getItem(KEY) || localStorage.getItem('idai_v15') || localStorage.getItem('idai_v14') || localStorage.getItem('idai_v13');
   if (s) { try { DB = JSON.parse(s); } catch(e) { seed(); } } else seed();
@@ -2013,7 +2013,7 @@ async function syncNow() {
   if (_syncingData) return toast('المزامنة قيد التنفيذ بالفعل...');
   _syncingData = true;
   try {
-    const res = await loadCoursesFromCloud();
+    const res = await cloudSyncEverything();
     try { renderView(); } catch (e) {}
     if (res && res.ok) toast('تمت مزامنة البيانات مع السحابة — ' + res.count + ' دورة', 'success');
     else toast('تعذّرت مزامنة البيانات، تحقق من الاتصال بالإنترنت', 'error');
@@ -2261,6 +2261,345 @@ async function syncAccountRoles(opts = {}) {
   toast('مزامنة الأدوار: نجح ' + ok + (bad.length ? ' — تعذّر ' + bad.length + ' (كلمة مرورهم على السحابة تختلف عن المحفوظة هنا، أعد تعيينها من إدارة المستخدمين ثم أعد المزامنة)' : ''), bad.length ? 'error' : 'success');
 }
 
+// ===== مزامنة بقية الأنظمة مع السحابة: الاختبارات والدرجات والرسائل والاستبيانات والإعدادات =====
+// الفكرة: نرصد أي تغيير محلي عند الحفظ (save) ثم نرفعه للسحابة تلقائياً بعد لحظة،
+// وعند الدخول نجلب أحدث نسخة من السحابة. الجداول المطلوبة موجودة في أوامر SQL المرفقة.
+const CLOUD_JSON_KEYS = ['users', 'teachers', 'hrEmployees', 'categories', 'surveyTemplates', 'certDesigns', 'permissions', 'rolePerms'];
+let _cloudReady = false, _cloudSuppress = false, _cloudPushTimer = null, _cloudHintShown = false;
+const _cloudDirtyState = new Set(), _cloudDirtyExams = new Set(), _cloudDirtyResults = new Set(), _cloudDirtyMsgs = new Set(), _cloudDirtySurveys = new Set();
+let _cloudSnapState = {}, _cloudSnapExams = {}, _cloudSnapResults = {}, _cloudSnapMsgs = {}, _cloudSnapSurveys = {};
+const _cloudAvail = { state: true, exams: true, results: true, messages: true, surveys: true };
+
+function cloudMissingTable(error) {
+  const m = String((error && (error.code || '')) + ' ' + (error && (error.message || error.details || error.hint || '')));
+  return /42P01|PGRST205|does not exist|schema cache|Could not find the table|relation .* does not exist/i.test(m);
+}
+function cloudTableHint() {
+  if (_cloudHintShown) return;
+  _cloudHintShown = true;
+  console.warn('جداول المزامنة الجديدة غير موجودة — نفّذ أوامر SQL المرفقة في Supabase SQL Editor ثم أعد تحميل الصفحة');
+  toast('لتفعيل مزامنة الاختبارات والدرجات والرسائل: نفّذ أوامر SQL في لوحة Supabase ثم أعد تحميل الصفحة', 'error');
+}
+// بيانات المستخدمين التي تُرفع للسحابة (بدون كلمات المرور نهائياً)
+function cloudKeyData(key) {
+  if (key === 'users') return (DB.users || []).map(u => ({ id: u.id, name: u.name, role: u.role, personalId: u.personalId, username: u.username, phone: u.phone, credentialsCustomized: !!u.credentialsCustomized, roleSynced: u.roleSynced }));
+  return DB[key] == null ? null : DB[key];
+}
+function cloudKeyJSON(key) { try { return JSON.stringify(cloudKeyData(key)); } catch (e) { return ''; } }
+function cloudExamJSON(ex) { try { return JSON.stringify({ c: ex.courseId, t: ex.title, q: ex.questions }); } catch (e) { return ''; } }
+function cloudSnapState() { _cloudSnapState = {}; CLOUD_JSON_KEYS.forEach(k => { _cloudSnapState[k] = cloudKeyJSON(k); }); _cloudDirtyState.clear(); }
+function cloudSnapExams() {
+  _cloudSnapExams = {}; _cloudSnapResults = {};
+  (DB.exams || []).forEach(ex => {
+    _cloudSnapExams[ex.id] = cloudExamJSON(ex);
+    Object.entries(ex.results || {}).forEach(([pid, r]) => { _cloudSnapResults[ex.id + '|' + pid] = JSON.stringify(r); });
+  });
+  _cloudDirtyExams.clear(); _cloudDirtyResults.clear();
+}
+function cloudSnapMessages() { _cloudSnapMsgs = {}; (DB.messages || []).forEach(m => { _cloudSnapMsgs[m.id] = JSON.stringify(m); }); _cloudDirtyMsgs.clear(); }
+function cloudSnapSurveys() { _cloudSnapSurveys = {}; (DB.surveyResponses || []).forEach(r => { _cloudSnapSurveys[r.id] = JSON.stringify(r); }); _cloudDirtySurveys.clear(); }
+function cloudSnapAll() { cloudSnapState(); cloudSnapExams(); cloudSnapMessages(); cloudSnapSurveys(); }
+function cloudHasData(key) { const v = DB[key]; if (Array.isArray(v)) return v.length > 0; if (v && typeof v === 'object') return Object.keys(v).length > 0; return !!v; }
+
+// يُستدعى تلقائياً من save(): يرصد التغييرات المحلية ويجهّز رفعها للسحابة
+function cloudMarkDirty() {
+  if (_cloudSuppress) return;
+  let changed = false;
+  CLOUD_JSON_KEYS.forEach(k => { const j = cloudKeyJSON(k); if (_cloudSnapState[k] !== j) { _cloudDirtyState.add(k); _cloudSnapState[k] = j; changed = true; } });
+  (DB.exams || []).forEach(ex => {
+    const j = cloudExamJSON(ex);
+    if (_cloudSnapExams[ex.id] !== j) { _cloudDirtyExams.add(ex.id); _cloudSnapExams[ex.id] = j; changed = true; }
+    Object.entries(ex.results || {}).forEach(([pid, r]) => { const k = ex.id + '|' + pid, jr = JSON.stringify(r); if (_cloudSnapResults[k] !== jr) { _cloudDirtyResults.add(k); _cloudSnapResults[k] = jr; changed = true; } });
+  });
+  (DB.messages || []).forEach(m => { const j = JSON.stringify(m); if (_cloudSnapMsgs[m.id] !== j) { _cloudDirtyMsgs.add(m.id); _cloudSnapMsgs[m.id] = j; changed = true; } });
+  (DB.surveyResponses || []).forEach(r => { const j = JSON.stringify(r); if (_cloudSnapSurveys[r.id] !== j) { _cloudDirtySurveys.add(r.id); _cloudSnapSurveys[r.id] = j; changed = true; } });
+  if (changed && _cloudReady) cloudSchedulePush();
+}
+function cloudSchedulePush() { if (_cloudPushTimer) clearTimeout(_cloudPushTimer); _cloudPushTimer = setTimeout(() => { cloudFlushDirty(); }, 1200); }
+async function cloudFlushDirty() {
+  _cloudPushTimer = null;
+  if (!_cloudReady) return;
+  const jobs = [];
+  [..._cloudDirtyState].forEach(k => jobs.push({ set: _cloudDirtyState, key: k, fn: () => cloudPushState(k) }));
+  [..._cloudDirtyExams].forEach(k => jobs.push({ set: _cloudDirtyExams, key: k, fn: () => cloudPushExam(k) }));
+  [..._cloudDirtyResults].forEach(k => jobs.push({ set: _cloudDirtyResults, key: k, fn: () => cloudPushResult(k) }));
+  [..._cloudDirtyMsgs].forEach(k => jobs.push({ set: _cloudDirtyMsgs, key: k, fn: () => cloudPushMessage(k) }));
+  [..._cloudDirtySurveys].forEach(k => jobs.push({ set: _cloudDirtySurveys, key: k, fn: () => cloudPushSurvey(k) }));
+  for (const job of jobs) {
+    try { await job.fn(); job.set.delete(job.key); } catch (e) { console.warn('cloud push', job.key, e && e.message ? e.message : e); }
+  }
+}
+async function cloudPushState(key) {
+  if (!_cloudAvail.state) return;
+  const { error } = await supabaseClient.from('app_state').upsert({ key, data: cloudKeyData(key), updated_at: new Date().toISOString() }, { onConflict: 'key' });
+  if (error) { if (cloudMissingTable(error)) { _cloudAvail.state = false; cloudTableHint(); } throw error; }
+}
+async function cloudPushExam(id) {
+  if (!_cloudAvail.exams) return;
+  const ex = (DB.exams || []).find(e => e.id === id); if (!ex) return;
+  const { error } = await supabaseClient.from('exams').upsert({ id: ex.id, course_id: ex.courseId, title: ex.title || 'الاختبار النهائي', questions: ex.questions || {}, deleted_at: null, updated_at: new Date().toISOString() }, { onConflict: 'id' });
+  if (error) { if (cloudMissingTable(error)) { _cloudAvail.exams = false; cloudTableHint(); } throw error; }
+}
+async function cloudPushResult(key) {
+  if (!_cloudAvail.results) return;
+  const p = key.split('|'), examId = p[0], pid = p[1];
+  const ex = (DB.exams || []).find(e => e.id === examId); if (!ex) return;
+  const r = (ex.results || {})[pid]; if (!r) return;
+  const { error } = await supabaseClient.from('exam_results').upsert({ exam_id: examId, participant_id: pid, score: Number(r.score) || 0, date: r.date || null, updated_at: new Date().toISOString() }, { onConflict: 'exam_id,participant_id' });
+  if (error) { if (cloudMissingTable(error)) { _cloudAvail.results = false; cloudTableHint(); } throw error; }
+}
+async function cloudPushMessage(id) {
+  if (!_cloudAvail.messages) return;
+  const m = (DB.messages || []).find(x => x.id === id); if (!m) return;
+  const { error } = await supabaseClient.from('messages').upsert({ id: m.id, teacher_id: m.teacherId || null, teacher_name: m.teacherName || null, subject: m.subject || '', body: m.body || '', date: m.date || null, read: !!m.read, deleted_at: null, updated_at: new Date().toISOString() }, { onConflict: 'id' });
+  if (error) { if (cloudMissingTable(error)) { _cloudAvail.messages = false; cloudTableHint(); } throw error; }
+}
+async function cloudPushSurvey(id) {
+  if (!_cloudAvail.surveys) return;
+  const r = (DB.surveyResponses || []).find(x => x.id === id); if (!r) return;
+  const { error } = await supabaseClient.from('survey_responses').upsert({ id: r.id, course_id: r.courseId || null, type: r.type || null, answers: r.answers || {}, date: r.date || null, respondent: r.respondent || null, respondent_id: r.respondentId || null, updated_at: new Date().toISOString() }, { onConflict: 'id' });
+  if (error) { if (cloudMissingTable(error)) { _cloudAvail.surveys = false; cloudTableHint(); } throw error; }
+}
+
+// تطبيق قائمة المستخدمين القادمة من السحابة (تحافظ على كلمات المرور المحلية)
+function applyCloudUsers(list) {
+  if (!Array.isArray(list) || !list.length) return;
+  const matched = new Set();
+  list.forEach(cu => {
+    if (!cu || !cu.id) return;
+    let local = (DB.users || []).find(u => u.id === cu.id);
+    if (!local && cu.personalId) local = (DB.users || []).find(u => String(u.personalId) === String(cu.personalId));
+    if (!local && cu.username) local = (DB.users || []).find(u => u.username === cu.username);
+    if (local) {
+      local.name = cu.name || local.name;
+      local.role = cu.role || local.role;
+      if (cu.personalId) local.personalId = cu.personalId;
+      if (cu.username) local.username = cu.username;
+      if (cu.phone !== undefined) local.phone = cu.phone;
+      if (cu.credentialsCustomized !== undefined) local.credentialsCustomized = cu.credentialsCustomized;
+      if (cu.roleSynced !== undefined) local.roleSynced = cu.roleSynced;
+      matched.add(local.id);
+    } else {
+      const nu = { id: cu.id, name: cu.name || '', role: cu.role || 'student', personalId: cu.personalId || '', username: cu.username || cu.personalId || '', phone: cu.phone || '', password: defaultPasswordFor(cu.personalId || cu.username || ''), credentialsCustomized: false };
+      if (cu.roleSynced !== undefined) nu.roleSynced = cu.roleSynced;
+      DB.users.push(nu); matched.add(nu.id);
+    }
+  });
+  // ما حُذف من السحابة يُحذف محلياً (لا نمس القائمة إذا كانت السحابة فارغة)
+  DB.users = DB.users.filter(u => matched.has(u.id));
+}
+async function loadAppStateFromCloud() {
+  try {
+    const r = await supabaseClient.from('app_state').select('key,data');
+    if (r.error) {
+      if (cloudMissingTable(r.error)) { _cloudAvail.state = false; cloudTableHint(); }
+      else console.warn('app_state load', r.error);
+      _cloudReady = true; cloudSnapState(); return false;
+    }
+    const rows = r.data || [], byKey = {};
+    rows.forEach(x => { byKey[x.key] = x.data; });
+    _cloudSuppress = true;
+    try {
+      CLOUD_JSON_KEYS.forEach(key => {
+        if (!(key in byKey) || byKey[key] == null) return;
+        if (key === 'users') applyCloudUsers(byKey[key]); else DB[key] = byKey[key];
+      });
+    } finally { _cloudSuppress = false; }
+    _cloudReady = true;
+    cloudSnapState();
+    const missing = CLOUD_JSON_KEYS.filter(k => !(k in byKey) && cloudHasData(k));
+    missing.forEach(k => _cloudDirtyState.add(k));
+    if (missing.length) cloudSchedulePush();
+    _cloudSuppress = true; save(); _cloudSuppress = false;
+    return true;
+  } catch (e) { console.error('loadAppStateFromCloud', e); _cloudReady = true; cloudSnapState(); return false; }
+}
+async function loadExamsFromCloud() {
+  try {
+    const [er, rr] = await Promise.all([
+      supabaseClient.from('exams').select('id,course_id,title,questions,deleted_at'),
+      supabaseClient.from('exam_results').select('exam_id,participant_id,score,date,updated_at')
+    ]);
+    if (er.error) {
+      if (cloudMissingTable(er.error)) { _cloudAvail.exams = false; _cloudAvail.results = false; cloudTableHint(); }
+      else console.warn('exams load', er.error);
+      _cloudReady = true; cloudSnapExams(); return false;
+    }
+    const rows = er.data || [];
+    const deleted = new Set(rows.filter(x => x.deleted_at).map(x => x.id));
+    const active = rows.filter(x => !x.deleted_at);
+    const cloudIds = new Set(rows.map(x => x.id));
+    const pushResults = [], pushExams = [];
+    const tb = (DB.tombstones && DB.tombstones.exams) || [];
+    _cloudSuppress = true;
+    try {
+      if (deleted.size) DB.exams = (DB.exams || []).filter(e => !deleted.has(e.id));
+      if (tb.length) DB.exams = (DB.exams || []).filter(e => !tb.includes(e.id));
+      active.forEach(ce => {
+        let le = (DB.exams || []).find(e => e.id === ce.id);
+        if (!le) { le = { id: ce.id, courseId: ce.course_id || '', title: ce.title || 'الاختبار النهائي', questions: ce.questions || {}, results: {} }; DB.exams.push(le); }
+        else { if (ce.course_id) le.courseId = ce.course_id; if (ce.title) le.title = ce.title; if (ce.questions && Object.keys(ce.questions).length) le.questions = ce.questions; le.results = le.results || {}; }
+      });
+      if (!rr.error) {
+        const cloudResult = {};
+        (rr.data || []).forEach(cr => { cloudResult[cr.exam_id + '|' + cr.participant_id] = cr; });
+        (rr.data || []).forEach(cr => {
+          const ex = (DB.exams || []).find(e => e.id === cr.exam_id); if (!ex) return;
+          ex.results = ex.results || {};
+          const local = ex.results[cr.participant_id];
+          const localTime = local && local.date ? new Date(local.date).getTime() : 0;
+          const cloudTime = cr.date ? new Date(cr.date).getTime() : (cr.updated_at ? new Date(cr.updated_at).getTime() : 0);
+          if (!local || !(localTime > cloudTime)) ex.results[cr.participant_id] = { score: Number(cr.score) || 0, date: cr.date || cr.updated_at || new Date().toISOString() };
+        });
+        DB.exams.forEach(ex => Object.entries(ex.results || {}).forEach(([pid, r]) => {
+          const k = ex.id + '|' + pid, cr = cloudResult[k];
+          if (!cr) { pushResults.push(k); return; }
+          const localTime = r && r.date ? new Date(r.date).getTime() : 0;
+          const cloudTime = cr.date ? new Date(cr.date).getTime() : (cr.updated_at ? new Date(cr.updated_at).getTime() : 0);
+          if (localTime > cloudTime) pushResults.push(k);
+        }));
+      }
+      DB.exams.forEach(ex => { if (!cloudIds.has(ex.id)) pushExams.push(ex.id); });
+    } finally { _cloudSuppress = false; }
+    _cloudReady = true;
+    cloudSnapExams();
+    pushExams.forEach(k => _cloudDirtyExams.add(k));
+    pushResults.forEach(k => _cloudDirtyResults.add(k));
+    if (pushExams.length || pushResults.length) cloudSchedulePush();
+    _cloudSuppress = true; save(); _cloudSuppress = false;
+    return true;
+  } catch (e) { console.error('loadExamsFromCloud', e); _cloudReady = true; cloudSnapExams(); return false; }
+}
+function cloudArchiveMessage(id) {
+  const tb = tomb('messages'); if (!tb.includes(id)) { tb.push(id); save(); }
+  if (!_cloudAvail.messages) return;
+  supabaseClient.from('messages').update({ deleted_at: new Date().toISOString() }).eq('id', id).then(({ error }) => {
+    if (!error) { DB.tombstones.messages = (DB.tombstones.messages || []).filter(x => x !== id); save(); }
+    else if (cloudMissingTable(error)) { _cloudAvail.messages = false; cloudTableHint(); }
+  });
+}
+async function loadMessagesFromCloud() {
+  try {
+    const r = await supabaseClient.from('messages').select('*');
+    if (r.error) {
+      if (cloudMissingTable(r.error)) { _cloudAvail.messages = false; cloudTableHint(); }
+      else console.warn('messages load', r.error);
+      _cloudReady = true; cloudSnapMessages(); return false;
+    }
+    const rows = r.data || [];
+    const deleted = new Set(rows.filter(x => x.deleted_at).map(x => x.id));
+    const active = rows.filter(x => !x.deleted_at);
+    const cloudIds = new Set(rows.map(x => x.id));
+    const tb = tomb('messages');
+    const pushMsgs = [];
+    _cloudSuppress = true;
+    try {
+      if (deleted.size) DB.messages = (DB.messages || []).filter(m => !deleted.has(m.id));
+      if (tb.length) DB.messages = (DB.messages || []).filter(m => !tb.includes(m.id));
+      active.forEach(cr => {
+        const obj = { id: cr.id, teacherId: cr.teacher_id, teacherName: cr.teacher_name, subject: cr.subject, body: cr.body, date: cr.date, read: !!cr.read };
+        const l = (DB.messages || []).find(m => m.id === cr.id);
+        if (l) Object.assign(l, obj); else DB.messages.push(obj);
+      });
+      DB.messages.forEach(m => { if (!cloudIds.has(m.id)) pushMsgs.push(m.id); });
+      tb.filter(id => !cloudIds.has(id)).forEach(id => { DB.tombstones.messages = DB.tombstones.messages.filter(x => x !== id); });
+    } finally { _cloudSuppress = false; }
+    _cloudReady = true;
+    cloudSnapMessages();
+    pushMsgs.forEach(k => _cloudDirtyMsgs.add(k));
+    if (pushMsgs.length) cloudSchedulePush();
+    tb.filter(id => cloudIds.has(id) && !deleted.has(id)).forEach(id => cloudArchiveMessage(id));
+    _cloudSuppress = true; save(); _cloudSuppress = false;
+    return true;
+  } catch (e) { console.error('loadMessagesFromCloud', e); _cloudReady = true; cloudSnapMessages(); return false; }
+}
+async function loadSurveyResponsesFromCloud() {
+  try {
+    const r = await supabaseClient.from('survey_responses').select('*');
+    if (r.error) {
+      if (cloudMissingTable(r.error)) { _cloudAvail.surveys = false; cloudTableHint(); }
+      else console.warn('survey_responses load', r.error);
+      _cloudReady = true; cloudSnapSurveys(); return false;
+    }
+    const rows = r.data || [], cloudIds = new Set(rows.map(x => x.id));
+    const pushSurveys = [];
+    _cloudSuppress = true;
+    try {
+      rows.forEach(cr => {
+        const obj = { id: cr.id, courseId: cr.course_id, type: cr.type, answers: cr.answers || {}, date: cr.date, respondent: cr.respondent, respondentId: cr.respondent_id };
+        const l = (DB.surveyResponses || []).find(x => x.id === cr.id);
+        if (l) Object.assign(l, obj); else DB.surveyResponses.push(obj);
+      });
+      (DB.surveyResponses || []).forEach(x => { if (!cloudIds.has(x.id)) pushSurveys.push(x.id); });
+    } finally { _cloudSuppress = false; }
+    _cloudReady = true;
+    cloudSnapSurveys();
+    pushSurveys.forEach(k => _cloudDirtySurveys.add(k));
+    if (pushSurveys.length) cloudSchedulePush();
+    _cloudSuppress = true; save(); _cloudSuppress = false;
+    return true;
+  } catch (e) { console.error('loadSurveyResponsesFromCloud', e); _cloudReady = true; cloudSnapSurveys(); return false; }
+}
+async function cloudSyncEverything() {
+  await loadAppStateFromCloud();
+  const res = await loadCoursesFromCloud();
+  await loadExamsFromCloud();
+  await loadMessagesFromCloud();
+  await loadSurveyResponsesFromCloud();
+  return res;
+}
+// أرشفة الاختبار المحذوف في السحابة (حذف ناعم يحافظ على النتائج)
+function cloudArchiveExam(id) {
+  const tb = tomb('exams'); if (!tb.includes(id)) { tb.push(id); save(); }
+  if (!_cloudAvail.exams) return;
+  supabaseClient.from('exams').update({ deleted_at: new Date().toISOString() }).eq('id', id).then(({ error }) => {
+    if (!error) { DB.tombstones.exams = (DB.tombstones.exams || []).filter(x => x !== id); save(); }
+    else if (cloudMissingTable(error)) { _cloudAvail.exams = false; cloudTableHint(); }
+  });
+}
+function cloudDeleteExamResult(examId, pid) {
+  if (!_cloudAvail.results) return;
+  supabaseClient.from('exam_results').delete().eq('exam_id', examId).eq('participant_id', pid).then(({ error }) => {
+    if (error && cloudMissingTable(error)) { _cloudAvail.results = false; cloudTableHint(); }
+  });
+}
+// اعتراض الحذف ليعمّ السحابة أيضاً
+const _deleteExamBase = deleteExam;
+deleteExam = function (id) { _deleteExamBase(id); if (!(DB.exams || []).some(e => e.id === id)) cloudArchiveExam(id); };
+const _deleteMessageBase = deleteMessage;
+deleteMessage = function (id) { _deleteMessageBase(id); if (!(DB.messages || []).some(m => m.id === id)) cloudArchiveMessage(id); };
+const _deleteCourseBase = deleteCourse;
+deleteCourse = function (id) {
+  const examIds = (DB.exams || []).filter(e => e.courseId === id).map(e => e.id);
+  _deleteCourseBase(id);
+  if (!getCourse(id)) examIds.forEach(x => cloudArchiveExam(x));
+};
+const _bulkDeleteCoursesBase = bulkDeleteCourses;
+bulkDeleteCourses = function () {
+  const before = (DB.exams || []).map(e => e.id);
+  _bulkDeleteCoursesBase();
+  const after = new Set((DB.exams || []).map(e => e.id));
+  before.filter(x => !after.has(x)).forEach(x => cloudArchiveExam(x));
+};
+const _deleteNomineeBase = deleteNominee;
+deleteNominee = function (cid, pid) {
+  const ex = getExamByCourse(cid); const exId = ex && ex.id; const had = !!(ex && ex.results && Object.prototype.hasOwnProperty.call(ex.results, pid));
+  _deleteNomineeBase(cid, pid);
+  const c = getCourse(cid);
+  const stillThere = !!(c && (c.participants || []).some(p => String(p.personalId) === String(pid)));
+  if (had && exId && !stillThere) cloudDeleteExamResult(exId, pid);
+};
+const _bulkDeleteNomineesBase = bulkDeleteNominees;
+bulkDeleteNominees = function (cid) {
+  const ex = getExamByCourse(cid); const c0 = getCourse(cid);
+  const before = new Set(c0 && c0.participants ? c0.participants.map(p => p.personalId) : []);
+  _bulkDeleteNomineesBase(cid);
+  const c1 = getCourse(cid);
+  const after = new Set(c1 && c1.participants ? c1.participants.map(p => p.personalId) : []);
+  if (ex) [...before].filter(pid => !after.has(pid)).forEach(pid => cloudDeleteExamResult(ex.id, pid));
+};
+
+
 // ===== الجلسة وتسجيل الدخول =====
 const VIEW_KEY = 'idai_last_view';
 // سجلّ الأدوار: لإضافة دور جديد مستقبلاً أضف سطراً هنا (base = الدور الذي يتبعه في الواجهة والصلاحيات)
@@ -2316,7 +2655,7 @@ async function enterApp(authUser, restoring) {
     state.view = view; renderNav();
   }
   document.getElementById('mainContent').innerHTML = '<p class="text-center text-gray-400 py-10"><i class="fas fa-spinner fa-spin ml-1"></i> جارٍ تحميل البيانات...</p>';
-  await loadCoursesFromCloud();
+  await cloudSyncEverything();
   renderView();
   if (state.user.role === 'admin') setTimeout(() => syncAccountRoles({ auto: true }), 2500);
 }
@@ -2402,6 +2741,7 @@ goTo = function (v) { _goToMobile(v); window.scrollTo(0, 0); };
 
 // ===== التشغيل =====
 load();
+cloudSnapAll();
 (async () => {
   const ok = await restoreSession();
   const bl = document.getElementById('bootLoader'); if (bl) bl.remove();
